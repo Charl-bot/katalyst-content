@@ -1,0 +1,91 @@
+{
+  "schema": "katalyst-third-party-content/1",
+  "comment": "In-app Credits for downloadable sound content (licensing report section 6). Every shipped sample must belong to a GREEN record here; tools/content enforces CC0-1.0 only for set v1 (D-193).",
+  "items": [
+    {
+      "id": "vsco2-ce",
+      "title": "VS Chamber Orchestra 2: Community Edition",
+      "author": "Versilian Studios (Sam Gossner, Simon Dalzell; sample cutting Elan Hickler / Soundemote)",
+      "licence_spdx": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+      "source_url": "https://github.com/sgossner/VSCO-2-CE",
+      "source_commit_or_date": "6dd651d55dde97fd4028699be9d4481f26917891",
+      "modifications": [
+        "Leading silence trimmed (attack kept)",
+        "Converted to FLAC at the source rate and bit depth",
+        "SFZ mapping converted to KIF v1; loudness-normalised by instrument gain"
+      ],
+      "used_in": [
+        "Orchestral Strings",
+        "Violins",
+        "Violas",
+        "Cellos",
+        "Solo Violin",
+        "Solo Double Bass",
+        "French Horn",
+        "Trumpet",
+        "Trombone",
+        "Tuba",
+        "Flute",
+        "Oboe",
+        "Clarinet",
+        "Bassoon"
+      ],
+      "provenance_path": "content/provenance/vsco2-ce/",
+      "verdict": "GREEN",
+      "verified_by": "tools/content build (CC0 LICENSE checked at the pinned commit)",
+      "verified_on": "2026-10-28"
+    },
+    {
+      "id": "vcsl",
+      "title": "Versilian Community Sample Library (VCSL)",
+      "author": "Versilian Studios LLC",
+      "licence_spdx": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+      "source_url": "https://github.com/sgossner/VCSL",
+      "source_commit_or_date": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e (audio, LICENSE); dfcf4a4918771eee884b96ad4493de82ef84daf6 (SFZ)",
+      "modifications": [
+        "Leading silence trimmed (attack kept)",
+        "Converted to FLAC at the source rate and bit depth",
+        "SFZ mapping converted to KIF v1; loudness-normalised by instrument gain",
+        "TX81Z / Electrophones content excluded"
+      ],
+      "used_in": [
+        "Concert Grand",
+        "Studio Upright",
+        "Flemish Harpsichord",
+        "Pipe Organ",
+        "Marimba",
+        "Vibraphone",
+        "Xylophone",
+        "Glockenspiel",
+        "Timpani",
+        "Orchestral Percussion"
+      ],
+      "provenance_path": "content/provenance/vcsl/",
+      "verdict": "GREEN",
+      "verified_by": "tools/content build (CC0 LICENSE checked at the pinned commit)",
+      "verified_on": "2026-10-28"
+    },
+    {
+      "id": "virtuosity-drums",
+      "title": "Virtuosity Drums",
+      "author": "Versilian Studios; performed by Austin McMahon; recorded at Virtuosity Musical Instruments, Boston",
+      "licence_spdx": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+      "source_url": "https://github.com/sfzinstruments/virtuosity_drums",
+      "source_commit_or_date": "9f04cf9a734527edfbb0a4eee1f674e45bbf71bc",
+      "modifications": [
+        "Leading silence trimmed with one cut per hit across all six mics (keeps them aligned)",
+        "Converted to FLAC at the source rate and bit depth",
+        "SFZ mapping converted to KIF v1 with mic presets; loudness-normalised by instrument gain",
+        "Auxiliary percussion (credited upstream to VSCO 2 Pro and Karoryfer) and GUI artwork excluded"
+      ],
+      "used_in": ["Jazz Club Kit"],
+      "provenance_path": "content/provenance/virtuosity-drums/",
+      "verdict": "GREEN",
+      "verified_by": "tools/content build (CC0 LICENSE checked at the pinned commit)",
+      "verified_on": "2026-10-28"
+    }
+  ]
+}

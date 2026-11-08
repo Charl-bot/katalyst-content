@@ -1,0 +1,42 @@
+name: Publish instrument packs
+# Rebuilds the CC0 instrument packs from their pinned upstream commits, checks
+# every archive against content/instruments/manifest.json (bytes + SHA-256),
+# publishes them as release assets, then downloads each one again and re-checks
+# it. A rebuild that doesn't reproduce the committed hashes uploads nothing.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build and verify only, upload nothing"
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency:
+  group: publish-instruments
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KATALYST_RELEASE_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - name: Build, verify and publish
+        run: |
+          set -o pipefail
+          args=(--build)
+          [[ "${{ inputs.dry_run }}" == "true" ]] && args+=(--dry-run)
+          bash scripts/content/publish-instruments.sh "${args[@]}" 2>&1 | tee publish.log
+      - name: Surface failure
+        if: failure()
+        run: grep -E "publish-instruments:|Error|error:|FAIL" publish.log | tail -20 | sed 's/^/::error::/' || true

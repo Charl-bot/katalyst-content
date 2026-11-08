@@ -1,0 +1,65 @@
+{
+  "comment": "Pinned CC0 upstream libraries (owner decision 28 Oct 2026, D-193). Audio and LICENSE are taken from audio_commit; SFZ mappings from mapping_commit. A referenced sample must have the same git blob id at both commits or the build fails. Paths matching any 'exclude' pattern are fatal unless listed in 'allow' with a reason. VCSL: the Yamaha upright is not used because its samples on the sfz branch (a commit without a LICENSE file) differ from master (D-195).",
+  "global_exclude": [
+    "(?i)karoryfer",
+    "(?i)vsco[ _-]?2[ _-]?pro",
+    "(?i)tx81z",
+    "(?i)\\bdx7\\b",
+    "(?i)fm piano",
+    "(?i)clavisynth",
+    "(?i)(^|/)gui(/|$)",
+    "(?i)\\.(png|jpe?g|gif|xml|pdf|rar|zip|7z|mp3|ogg)$"
+  ],
+  "libraries": [
+    {
+      "id": "vsco2-ce",
+      "title": "VS Chamber Orchestra 2: Community Edition",
+      "publisher": "Versilian Studios (Sam Gossner, Simon Dalzell; sample cutting Elan Hickler / Soundemote)",
+      "repo": "sgossner/VSCO-2-CE",
+      "source_url": "https://github.com/sgossner/VSCO-2-CE",
+      "audio_commit": "6dd651d55dde97fd4028699be9d4481f26917891",
+      "audio_ref": "SFZ",
+      "mapping_commit": "6dd651d55dde97fd4028699be9d4481f26917891",
+      "mapping_ref": "SFZ",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "exclude": ["(?i)^miscellania raw/", "(?i)^vsco 1 percussion/"],
+      "allow": []
+    },
+    {
+      "id": "vcsl",
+      "title": "Versilian Community Sample Library (VCSL)",
+      "publisher": "Versilian Studios LLC",
+      "repo": "sgossner/VCSL",
+      "source_url": "https://github.com/sgossner/VCSL",
+      "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+      "audio_ref": "master",
+      "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6",
+      "mapping_ref": "sfz",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "exclude": ["(?i)^electrophones/", "(?i)yamaha"],
+      "allow": []
+    },
+    {
+      "id": "virtuosity-drums",
+      "title": "Virtuosity Drums",
+      "publisher": "Versilian Studios; performed by Austin McMahon; recorded at Virtuosity Musical Instruments, Boston",
+      "repo": "sfzinstruments/virtuosity_drums",
+      "source_url": "https://github.com/sfzinstruments/virtuosity_drums",
+      "audio_commit": "9f04cf9a734527edfbb0a4eee1f674e45bbf71bc",
+      "audio_ref": "master",
+      "mapping_commit": "9f04cf9a734527edfbb0a4eee1f674e45bbf71bc",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "exclude": [
+        "(?i)^samples/perc/",
+        "(?i)perc\\.sfz$",
+        "(?i)/perc/",
+        "(?i)\\.bank\\.xml$"
+      ],
+      "allow": []
+    }
+  ]
+}

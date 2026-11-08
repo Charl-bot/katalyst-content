@@ -1,0 +1,698 @@
+{
+  "comment": "Curated first set (D-192). A pack is one download (D-191); its instruments share one sample pool. Names are descriptive and trademark-free. 'parts' are upstream SFZ files; 'articulation' maps an SFZ keyswitch label (sw_label, case-insensitive substring) or a whole part to a KIF articulation; 'keyswitch' values are MIDI notes. 'key_range' clips a part's zones (key splits); 'key_shift' moves an unpitched part to other keys.",
+  "version": "1.0.0",
+  "release": {
+    "repo": "Charl-bot/katalyst-content",
+    "tag": "instruments-cc0-v1",
+    "why": "Release assets must be anonymously downloadable; Charl-bot/katalyst-suite is private (D-191)."
+  },
+  "packs": [
+    {
+      "id": "concert-grand",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "concert-grand",
+          "name": "Concert Grand",
+          "category": "piano",
+          "description": "Concert grand piano, close stereo pair; pedal-up and pedal-down sustains switched by the sustain pedal, plus key-release samples.",
+          "parts": [
+            {
+              "sfz": "Chordophones/Zithers/Grand Piano, Steinway B.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "controls": [{ "cc": 64, "name": "Sustain pedal", "default": 0 }]
+        }
+      ]
+    },
+    {
+      "id": "studio-upright",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "studio-upright",
+          "name": "Studio Upright",
+          "category": "piano",
+          "description": "Upright piano, two dynamics with four round robins, and key-release samples.",
+          "parts": [
+            {
+              "sfz": "Chordophones/Zithers/Upright Piano, Knight.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "controls": [{ "cc": 64, "name": "Sustain pedal", "default": 0 }]
+        }
+      ]
+    },
+    {
+      "id": "harpsichord",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "flemish-harpsichord",
+          "name": "Flemish Harpsichord",
+          "category": "keys",
+          "description": "Two-manual style harpsichord: 8' and 4' stops and both together, with key-release (jack) samples.",
+          "qa_notes": [
+            "The 4' stop sounds an octave above the key by design (that is what a 4' register is); its octave suspects in this report are expected. Measured: 16 of the 4' samples sit +12 semitones above their key, the rest were not measurable unguided."
+          ],
+          "parts": [
+            {
+              "sfz": "Chordophones/Zithers/Harpsichord, Flemish - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "full",
+              "name": "8' + 4'",
+              "match": "full",
+              "default": true
+            },
+            { "id": "stop-8", "name": "8'", "match": "8'" },
+            { "id": "stop-4", "name": "4'", "match": "4'" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pipe-organ",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "pipe-organ",
+          "name": "Pipe Organ",
+          "category": "organ",
+          "description": "Pipe organ, loud and quiet registrations, manual and pedal.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Pipe Organ - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "loud",
+              "name": "Loud",
+              "match": "^loud$",
+              "default": true
+            },
+            { "id": "quiet", "name": "Quiet", "match": "^quiet$" },
+            { "id": "loud-pedal", "name": "Loud Pedal", "match": "loud pedal" },
+            {
+              "id": "quiet-pedal",
+              "name": "Quiet Pedal",
+              "match": "quiet pedal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mallets",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "marimba",
+          "name": "Marimba",
+          "category": "mallets",
+          "parts": [
+            {
+              "sfz": "Idiophones/Struck Idiophones/Marimba.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "vibraphone",
+          "name": "Vibraphone",
+          "category": "mallets",
+          "parts": [
+            { "sfz": "Idiophones/Struck Idiophones/Vibraphone - Keyswitch.sfz" }
+          ],
+          "articulations": [
+            {
+              "id": "soft-mallets",
+              "name": "Soft Mallets",
+              "match": "soft",
+              "default": true
+            },
+            { "id": "hard-mallets", "name": "Hard Mallets", "match": "hard" },
+            { "id": "bowed", "name": "Bowed", "match": "bowed" }
+          ]
+        },
+        {
+          "id": "xylophone",
+          "name": "Xylophone",
+          "category": "mallets",
+          "parts": [
+            {
+              "sfz": "Idiophones/Struck Idiophones/Xylophone - Keyswitch.sfz",
+              "key_shift": 12,
+              "why": "Upstream maps written pitch; every sample measures +12 semitones above its root. Mapped at concert pitch (D-199)."
+            }
+          ],
+          "articulations": [
+            {
+              "id": "hard-mallets",
+              "name": "Hard Mallets",
+              "match": "hard",
+              "default": true
+            },
+            {
+              "id": "medium-mallets",
+              "name": "Medium Mallets",
+              "match": "medium"
+            },
+            { "id": "soft-mallets", "name": "Soft Mallets", "match": "soft" }
+          ]
+        },
+        {
+          "id": "glockenspiel",
+          "name": "Glockenspiel",
+          "category": "mallets",
+          "pitch_method": "spectral",
+          "parts": [
+            {
+              "sfz": "Idiophones/Struck Idiophones/Glockenspiel.sfz",
+              "articulation": "normal",
+              "key_shift": 12,
+              "why": "Every sample measures +12 semitones above its mapped root. Mapped at concert pitch (D-199)."
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "orchestral-percussion",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "timpani",
+          "name": "Timpani",
+          "category": "percussion",
+          "parts": [
+            {
+              "sfz": "Membranophones/Struck Membranophones/Timpani 1 - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            { "id": "hit", "name": "Hit", "match": "hit", "default": true },
+            { "id": "roll", "name": "Roll", "match": "roll" }
+          ]
+        },
+        {
+          "id": "orchestral-percussion",
+          "name": "Orchestral Percussion",
+          "category": "percussion",
+          "pitched": false,
+          "description": "Concert bass drum, snare, clash and suspended cymbals, gong, triangles, tambourine, woodblock, sleigh bells and slapstick on one keyboard.",
+          "parts": [
+            {
+              "sfz": "Membranophones/Struck Membranophones/Bass Drum 1.sfz",
+              "articulation": "normal",
+              "key_shift": -24,
+              "label": "Bass drum"
+            },
+            {
+              "sfz": "Membranophones/Struck Membranophones/Snare Drum, Modern 1.sfz",
+              "articulation": "normal",
+              "key_shift": -22,
+              "label": "Snare"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Clash Cymbals 1.sfz",
+              "articulation": "normal",
+              "key_shift": -15,
+              "label": "Clash cymbals"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Suspended Cymbal 1.sfz",
+              "articulation": "normal",
+              "key_shift": -12,
+              "label": "Suspended cymbal"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Gong 1.sfz",
+              "articulation": "normal",
+              "key_shift": 2,
+              "label": "Gong"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Triangles.sfz",
+              "articulation": "normal",
+              "key_shift": 5,
+              "label": "Triangle"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Tambourine 1.sfz",
+              "articulation": "normal",
+              "key_shift": 19,
+              "label": "Tambourine"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Woodblock.sfz",
+              "articulation": "normal",
+              "key_shift": 22,
+              "label": "Woodblock"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Sleigh Bells.sfz",
+              "articulation": "normal",
+              "key_shift": 26,
+              "label": "Sleigh bells"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Slapstick.sfz",
+              "articulation": "normal",
+              "key_shift": 31,
+              "label": "Slapstick"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "orchestral-strings",
+      "library": "vsco2-ce",
+      "instruments": [
+        {
+          "id": "orchestral-strings",
+          "name": "Orchestral Strings",
+          "category": "strings",
+          "description": "String orchestra across the keyboard: basses up to B1 (lowest C1), cellos C2-B2, violas C3-F#3, violins from G3. Keyswitches C0-D#0.",
+          "parts": [
+            {
+              "sfz": "Contrabass-KS.sfz",
+              "key_range": [0, 35],
+              "drop": ["non-vibrato"]
+            },
+            { "sfz": "CelloEns-KS.sfz", "key_range": [36, 47] },
+            { "sfz": "ViolaEns-KS.sfz", "key_range": [48, 54] },
+            { "sfz": "ViolinEns-KS.sfz", "key_range": [55, 127] }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "^sustain( vibrato)?$",
+              "keyswitch": 12,
+              "default": true
+            },
+            {
+              "id": "tremolo",
+              "name": "Tremolo",
+              "match": "tremolo",
+              "keyswitch": 13
+            },
+            {
+              "id": "spiccato",
+              "name": "Spiccato",
+              "match": "spiccato",
+              "keyswitch": 14
+            },
+            {
+              "id": "pizzicato",
+              "name": "Pizzicato",
+              "match": "pizzicato",
+              "keyswitch": 15
+            }
+          ]
+        },
+        {
+          "id": "violins",
+          "name": "Violins",
+          "category": "strings",
+          "parts": [{ "sfz": "ViolinEns-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "sustain",
+              "default": true
+            },
+            { "id": "tremolo", "name": "Tremolo", "match": "tremolo" },
+            { "id": "spiccato", "name": "Spiccato", "match": "spiccato" },
+            { "id": "pizzicato", "name": "Pizzicato", "match": "pizzicato" }
+          ]
+        },
+        {
+          "id": "violas",
+          "name": "Violas",
+          "category": "strings",
+          "parts": [{ "sfz": "ViolaEns-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "sustain",
+              "default": true
+            },
+            { "id": "tremolo", "name": "Tremolo", "match": "tremolo" },
+            { "id": "spiccato", "name": "Spiccato", "match": "spiccato" },
+            { "id": "pizzicato", "name": "Pizzicato", "match": "pizzicato" }
+          ]
+        },
+        {
+          "id": "cellos",
+          "name": "Cellos",
+          "category": "strings",
+          "parts": [{ "sfz": "CelloEns-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "sustain",
+              "default": true
+            },
+            { "id": "tremolo", "name": "Tremolo", "match": "tremolo" },
+            { "id": "spiccato", "name": "Spiccato", "match": "spiccato" },
+            { "id": "pizzicato", "name": "Pizzicato", "match": "pizzicato" }
+          ]
+        },
+        {
+          "id": "solo-violin",
+          "name": "Solo Violin",
+          "category": "strings",
+          "parts": [{ "sfz": "SViolin-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "sustain",
+              "default": true
+            },
+            { "id": "tremolo", "name": "Tremolo", "match": "tremolo" },
+            { "id": "spiccato", "name": "Spiccato", "match": "spiccato" },
+            { "id": "pizzicato", "name": "Pizzicato", "match": "pizzicato" }
+          ]
+        },
+        {
+          "id": "solo-double-bass",
+          "name": "Solo Double Bass",
+          "category": "strings",
+          "parts": [{ "sfz": "Contrabass-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "sustain vibrato",
+              "default": true
+            },
+            {
+              "id": "sustain-nv",
+              "name": "Sustain (no vibrato)",
+              "match": "non-vibrato"
+            },
+            { "id": "tremolo", "name": "Tremolo", "match": "tremolo" },
+            { "id": "spiccato", "name": "Spiccato", "match": "spiccato" },
+            { "id": "pizzicato", "name": "Pizzicato", "match": "pizzicato" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "brass",
+      "library": "vsco2-ce",
+      "instruments": [
+        {
+          "id": "french-horn",
+          "name": "French Horn",
+          "category": "brass",
+          "parts": [
+            { "sfz": "FHornSus.sfz", "articulation": "sustain" },
+            { "sfz": "FHornStac.sfz", "articulation": "staccato" },
+            { "sfz": "FHornMute.sfz", "articulation": "muted" }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "keyswitch": 24,
+              "default": true
+            },
+            { "id": "staccato", "name": "Staccato", "keyswitch": 25 },
+            { "id": "muted", "name": "Muted", "keyswitch": 26 }
+          ]
+        },
+        {
+          "id": "trumpet",
+          "name": "Trumpet",
+          "category": "brass",
+          "parts": [
+            { "sfz": "TrumpetSus.sfz", "articulation": "sustain" },
+            { "sfz": "TrumpetSusVib.sfz", "articulation": "sustain-vib" },
+            { "sfz": "TrumpetStac.sfz", "articulation": "staccato" },
+            {
+              "sfz": "TrumpetStraightMuteSus.sfz",
+              "articulation": "straight-mute"
+            },
+            { "sfz": "TrumpetHarmonMuteSus.sfz", "articulation": "harmon-mute" }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "keyswitch": 36,
+              "default": true
+            },
+            { "id": "sustain-vib", "name": "Sustain Vibrato", "keyswitch": 37 },
+            { "id": "staccato", "name": "Staccato", "keyswitch": 38 },
+            { "id": "straight-mute", "name": "Straight Mute", "keyswitch": 39 },
+            { "id": "harmon-mute", "name": "Harmon Mute", "keyswitch": 40 }
+          ]
+        },
+        {
+          "id": "trombone",
+          "name": "Trombone",
+          "category": "brass",
+          "parts": [
+            { "sfz": "TromboneSus.sfz", "articulation": "sustain" },
+            { "sfz": "TromboneVib.sfz", "articulation": "sustain-vib" },
+            { "sfz": "TromboneStac.sfz", "articulation": "staccato" }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "keyswitch": 24,
+              "default": true
+            },
+            { "id": "sustain-vib", "name": "Sustain Vibrato", "keyswitch": 25 },
+            { "id": "staccato", "name": "Staccato", "keyswitch": 26 }
+          ]
+        },
+        {
+          "id": "tuba",
+          "name": "Tuba",
+          "category": "brass",
+          "parts": [{ "sfz": "Tuba-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "sustain",
+              "default": true
+            },
+            { "id": "staccato", "name": "Staccato", "match": "staccato" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "woodwinds",
+      "library": "vsco2-ce",
+      "instruments": [
+        {
+          "id": "flute",
+          "name": "Flute",
+          "category": "woodwinds",
+          "parts": [{ "sfz": "Flute-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain-vib",
+              "name": "Sustain Vibrato",
+              "match": "^sustain vibrato$",
+              "default": true
+            },
+            {
+              "id": "sustain",
+              "name": "Sustain (no vibrato)",
+              "match": "non-vibrato"
+            },
+            {
+              "id": "expressive",
+              "name": "Expressive Vibrato",
+              "match": "expression"
+            },
+            { "id": "staccato", "name": "Staccato", "match": "staccato" }
+          ]
+        },
+        {
+          "id": "oboe",
+          "name": "Oboe",
+          "category": "woodwinds",
+          "parts": [
+            { "sfz": "OboeSusVib.sfz", "articulation": "sustain-vib" },
+            { "sfz": "OboeSusNV.sfz", "articulation": "sustain" },
+            { "sfz": "OboeStac.sfz", "articulation": "staccato" }
+          ],
+          "articulations": [
+            {
+              "id": "sustain-vib",
+              "name": "Sustain Vibrato",
+              "keyswitch": 36,
+              "default": true
+            },
+            {
+              "id": "sustain",
+              "name": "Sustain (no vibrato)",
+              "keyswitch": 37
+            },
+            { "id": "staccato", "name": "Staccato", "keyswitch": 38 }
+          ]
+        },
+        {
+          "id": "clarinet",
+          "name": "Clarinet",
+          "category": "woodwinds",
+          "parts": [{ "sfz": "Clarinet-KS.sfz" }],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "sustain",
+              "default": true
+            },
+            { "id": "staccato", "name": "Staccato", "match": "staccato" }
+          ]
+        },
+        {
+          "id": "bassoon",
+          "name": "Bassoon",
+          "category": "woodwinds",
+          "parts": [
+            { "sfz": "BassoonSus.sfz", "articulation": "sustain" },
+            { "sfz": "BassoonVib.sfz", "articulation": "sustain-vib" },
+            { "sfz": "BassoonStac.sfz", "articulation": "staccato" }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "keyswitch": 24,
+              "default": true
+            },
+            { "id": "sustain-vib", "name": "Sustain Vibrato", "keyswitch": 25 },
+            { "id": "staccato", "name": "Staccato", "keyswitch": 26 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jazz-kit",
+      "library": "virtuosity-drums",
+      "instruments": [
+        {
+          "id": "jazz-kit",
+          "name": "Jazz Club Kit",
+          "category": "drums",
+          "pitched": false,
+          "description": "Jazz/club drum kit played with sticks, six mic positions with mix presets. GM-style key map; extra snare and tom techniques C6-C7. CC4 hi-hat pedal, CC21 snares off.",
+          "multi_mic": true,
+          "merge_reference_mic": "overheads",
+          "defines": "Programs/keymaps/keymap.sfz",
+          "parts": [
+            { "sfz": "Programs/mappings/kickmic_all.sfz", "mic": "kick" },
+            { "sfz": "Programs/mappings/snaremic_all.sfz", "mic": "snare" },
+            { "sfz": "Programs/mappings/oh_all.sfz", "mic": "overheads" },
+            { "sfz": "Programs/mappings/mid_all.sfz", "mic": "mid" },
+            { "sfz": "Programs/mappings/room_all.sfz", "mic": "room" },
+            { "sfz": "Programs/mappings/lofi_all.sfz", "mic": "vintage" }
+          ],
+          "mics": [
+            { "id": "kick", "name": "Kick close" },
+            { "id": "snare", "name": "Snare close" },
+            { "id": "overheads", "name": "Overheads" },
+            { "id": "mid", "name": "Mid (player)" },
+            { "id": "room", "name": "Room" },
+            { "id": "vintage", "name": "Vintage mic" }
+          ],
+          "mic_presets": [
+            {
+              "id": "full",
+              "name": "Full mix",
+              "default": true,
+              "gains_db": {
+                "kick": -3,
+                "snare": -4,
+                "overheads": 0,
+                "mid": -6,
+                "room": -8,
+                "vintage": null
+              }
+            },
+            {
+              "id": "close",
+              "name": "Close & tight",
+              "gains_db": {
+                "kick": 0,
+                "snare": 0,
+                "overheads": -6,
+                "mid": null,
+                "room": null,
+                "vintage": null
+              }
+            },
+            {
+              "id": "overheads",
+              "name": "Overheads only",
+              "gains_db": {
+                "kick": null,
+                "snare": null,
+                "overheads": 0,
+                "mid": null,
+                "room": null,
+                "vintage": null
+              }
+            },
+            {
+              "id": "room",
+              "name": "Roomy",
+              "gains_db": {
+                "kick": -6,
+                "snare": -8,
+                "overheads": -3,
+                "mid": -3,
+                "room": 0,
+                "vintage": null
+              }
+            },
+            {
+              "id": "vintage",
+              "name": "Vintage single mic",
+              "gains_db": {
+                "kick": null,
+                "snare": null,
+                "overheads": null,
+                "mid": null,
+                "room": null,
+                "vintage": 0
+              }
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "controls": [
+            { "cc": 4, "name": "Hi-hat pedal (127 = closed)", "default": 127 },
+            { "cc": 21, "name": "Snares off (> 100)", "default": 0 },
+            { "cc": 1, "name": "Roll dynamics", "default": 31 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+# Katalyst content pipeline (tools/content). Python 3.13 (what CI and the v1 build used).
+# Exact pins, transitive set included: the FLAC bytes (and so every SHA-256 in
+# content/instruments/manifest.json) depend on the libFLAC inside the
+# soundfile wheel, so a different version can produce different hashes.
+#   python -m venv .venv && .venv/bin/pip install -r tools/content/requirements.txt
+numpy==2.5.3
+scipy==1.18.1
+soundfile==0.14.0
+cffi==2.1.1
+pycparser==3.12
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+referencing==0.37.0
+rpds-py==2026.9.1
+attrs==26.1.0
+typing_extensions==4.16.0
