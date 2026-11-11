@@ -20,6 +20,7 @@ Per-file provenance: `content/provenance/<library>/provenance.json` records the 
   - Orchestral Strings, Violins, Violas, Cellos, Solo Violin, Solo Double Bass
   - French Horn, Trumpet, Trombone, Tuba
   - Flute, Oboe, Clarinet, Bassoon
+  - Piccolo (pack `piccolo`, D-396; mapped at concert pitch, an octave above the upstream's written pitch)
 
 ## Versilian Community Sample Library (VCSL)
 
@@ -33,7 +34,8 @@ Per-file provenance: `content/provenance/<library>/provenance.json` records the 
   - Concert Grand, Studio Upright, Bright Grand, Flemish Harpsichord, Pipe Organ
   - Marimba, Vibraphone, Xylophone, Glockenspiel, Tubular Bells
   - Timpani, Orchestral Percussion, Hand Percussion
-- **Not used:** the TX81Z recordings (recordings of a hardware synthesizer's factory patches) and the other `Electrophones`.
+  - Since D-396 (11 Nov 2026): Soprano, Alto, Tenor and Bass Recorder, Ocarina; Diatonic and Chromatic Harmonica; Tenor Sax, Curved Soprano Sax; Concert Harp, Folk Harp; Vietnamese Zither, Strumstick, Didgeridoo; Kalimba (Kenya), Kalimba (Tanzania), Mbira dzaVadzimu, Mbira (Gandanga), Nyunga Nyunga, Balafon; World Percussion; Sound Effects, Wine Glasses
+- **Not used:** the bowed and plucked psaltery (its keyswitch mapping names a sample that is not in the repository), the TX81Z recordings (recordings of a hardware synthesizer's factory patches) and the other `Electrophones`.
 
 ## Virtuosity Drums
 
@@ -54,6 +56,23 @@ Per-file provenance: `content/provenance/<library>/provenance.json` records the 
 - **Changes we made (as the licence asks us to say):** the samples were converted to FLAC, trimmed of leading silence and loudness-normalised by an instrument gain; the SFZ mapping was converted to the Katalyst Instrument Format with the natural tuning only (the upstream's retuned set is not used); the hammer-noise and string-resonance release samples are kept and the pedal-noise samples are left out. The recordings are otherwise unaltered.
 - **What this does not mean:** the author and the sfzinstruments project do not endorse Katalyst Suite or this adaptation.
 - **Technical measures:** the pack is downloaded as an ordinary `.tar.gz` and unpacked to plain FLAC and JSON files in the content folder. The SHA-256 checks only verify the download (integrity); nothing is encrypted or locked, so a person who has the pack can use the recordings as CC BY 3.0 section 4(a) allows. The licence for the recordings stays CC BY 3.0 whatever the licence of Katalyst Suite itself. The end-user licence agreement has to say so; it is not written yet (KI-1305).
+
+## ganjo (six-string guitar banjo)
+
+- **By:** itsclipping (recorded, edited and mapped), published in the `sfzinstruments` project.
+- **Licence:** CC0 1.0 Universal (the `LICENSE.md` at the pinned commit is the CC0 legal code).
+- **Source:** <https://github.com/sfzinstruments/ganjo>, commit `ccff5cd5cd3b513873a48994c07724d9d3c39e1c`
+- **Used in:** Six-String Banjo (pack `banjo`).
+
+## Greg Sullivan's E-Pianos (CC BY 3.0, attribution required)
+
+- **By:** Greg Sullivan (recordings, <http://www.sullivang.net/>). The SFZ mapping is by kinwie (the `sfzinstruments` project).
+- **Title and source of the work:** "Greg Sullivan's E-Pianos", <https://github.com/sfzinstruments/GregSullivan.E-Pianos>, commit `8c3e581acda3594b553948ff0222d4f84a698376`.
+- **Licence:** Creative Commons Attribution 3.0 Unported, <https://creativecommons.org/licenses/by/3.0/>. The licence text at the pinned commit is stored in `content/provenance/greg-sullivan-epianos/LICENSE`.
+- **Used in:** Electric Grand, Pad-Plucked Electric Piano, Sampled Reed Electric Piano (pack `vintage-electric-pianos`, release `instruments-cc-by-v1`).
+- **Changes we made:** the samples were converted to FLAC, trimmed of leading silence and loudness-normalised by an instrument gain; the SFZ mappings were converted to the Katalyst Instrument Format; the instruments were renamed with descriptive names that carry no brand; the upstream's ARIA controls (volume, pan, release and velocity-tracking CCs), its `end` points on a few samples and the release group's volume offset are not carried over (`docs/content/qa/electric-grand.md` and the two other reports list this). The recordings are otherwise unaltered.
+- **What this does not mean:** the author and the sfzinstruments project do not endorse Katalyst Suite or this adaptation.
+- **Technical measures:** as for the Salamander Grand above: a plain `.tar.gz` of FLAC and JSON, no lock.
 
 ## Verified but not built: DrumGizmo kits
 

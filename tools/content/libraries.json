@@ -78,6 +78,39 @@
       "modifications": "samples converted to FLAC, loudness-normalised and trimmed; the SFZ mapping converted to KIF with the natural tuning only; hammer-noise and string-resonance release samples kept, pedal noise omitted.",
       "exclude": [],
       "allow": []
+    },
+    {
+      "id": "ganjo",
+      "title": "ganjo (six-string guitar banjo)",
+      "publisher": "itsclipping (recorded, edited and mapped); sfzinstruments",
+      "repo": "sfzinstruments/ganjo",
+      "source_url": "https://github.com/sfzinstruments/ganjo",
+      "audio_commit": "ccff5cd5cd3b513873a48994c07724d9d3c39e1c",
+      "audio_ref": "master",
+      "mapping_commit": "ccff5cd5cd3b513873a48994c07724d9d3c39e1c",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE.md",
+      "exclude": [],
+      "allow": []
+    },
+    {
+      "id": "greg-sullivan-epianos",
+      "title": "Greg Sullivan's E-Pianos",
+      "publisher": "Greg Sullivan (recording); SFZ mapping by kinwie (sfzinstruments)",
+      "repo": "sfzinstruments/GregSullivan.E-Pianos",
+      "source_url": "https://github.com/sfzinstruments/GregSullivan.E-Pianos",
+      "audio_commit": "8c3e581acda3594b553948ff0222d4f84a698376",
+      "audio_ref": "master",
+      "mapping_commit": "8c3e581acda3594b553948ff0222d4f84a698376",
+      "mapping_ref": "master",
+      "licence_spdx": "CC-BY-3.0",
+      "licence_file": "LICENSE",
+      "licence_uri": "https://creativecommons.org/licenses/by/3.0/",
+      "attribution": "\"Greg Sullivan's E-Pianos\" (electric grand, pad-plucked and reed electric pianos) by Greg Sullivan (http://www.sullivang.net/), SFZ mapping by kinwie (https://github.com/sfzinstruments/GregSullivan.E-Pianos).",
+      "modifications": "samples converted to FLAC, loudness-normalised and trimmed; the SFZ mappings converted to KIF; instrument names changed to descriptive, brand-free names.",
+      "exclude": [],
+      "allow": []
     }
   ]
 }

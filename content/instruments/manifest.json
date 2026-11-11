@@ -622,6 +622,541 @@
      "members": 147
     }
    ]
+  },
+  {
+   "id": "recorders",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 64882255,
+   "sample_count": 183,
+   "instruments": [
+    {
+     "id": "katalyst.alto-recorder",
+     "name": "Alto Recorder",
+     "category": "woodwinds",
+     "kif": "recorders/alto-recorder.kif.json",
+     "kif_sha256": "dcfc6ea14b94ea4e3cef415104956c266e092792656343e73e172cc817cb31a9",
+     "kif_bytes": 41366
+    },
+    {
+     "id": "katalyst.bass-recorder",
+     "name": "Bass Recorder",
+     "category": "woodwinds",
+     "kif": "recorders/bass-recorder.kif.json",
+     "kif_sha256": "87343db0159a296e54e5fd90d0e34d4e664ffa72fe417e3522ce81bf9a93b741",
+     "kif_bytes": 47377
+    },
+    {
+     "id": "katalyst.ocarina",
+     "name": "Ocarina",
+     "category": "woodwinds",
+     "kif": "recorders/ocarina.kif.json",
+     "kif_sha256": "5cd1d3e2912332c6fb14444f0d67d74fe58078d9eea177e4c81fe9759a33bb79",
+     "kif_bytes": 48001
+    },
+    {
+     "id": "katalyst.soprano-recorder",
+     "name": "Soprano Recorder",
+     "category": "woodwinds",
+     "kif": "recorders/soprano-recorder.kif.json",
+     "kif_sha256": "4c282d5a2baf9ba33a8117a97db459e108300c407e42c2d9fa10badd1518ba2a",
+     "kif_bytes": 29660
+    },
+    {
+     "id": "katalyst.tenor-recorder",
+     "name": "Tenor Recorder",
+     "category": "woodwinds",
+     "kif": "recorders/tenor-recorder.kif.json",
+     "kif_sha256": "b7acebd46617feaf9aed42a3bc9773071b8dbbf97044590608f3461b864ebd93",
+     "kif_bytes": 44652
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-recorders-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-recorders-1.0.0.tar.gz",
+     "sha256": "0374bc4296ebdafc55862d5d44673b380136212e6e9d7a910efaa86e4ac8ebbb",
+     "bytes": 64310457,
+     "members": 188
+    }
+   ]
+  },
+  {
+   "id": "harmonicas",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 39728970,
+   "sample_count": 136,
+   "instruments": [
+    {
+     "id": "katalyst.chromatic-harmonica",
+     "name": "Chromatic Harmonica",
+     "category": "woodwinds",
+     "kif": "harmonicas/chromatic-harmonica.kif.json",
+     "kif_sha256": "029cc89ff608aeb116289eff75921d554b9e5c18b32208a61f80bec705dfddbc",
+     "kif_bytes": 88317
+    },
+    {
+     "id": "katalyst.diatonic-harmonica",
+     "name": "Diatonic Harmonica",
+     "category": "woodwinds",
+     "kif": "harmonicas/diatonic-harmonica.kif.json",
+     "kif_sha256": "d129468d47a6d3b2cfc34527d62aa2248b08a67d2910e821782bb2a6224c7fdf",
+     "kif_bytes": 66140
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-harmonicas-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-harmonicas-1.0.0.tar.gz",
+     "sha256": "8006166b1ab5c82dcd0d3b976ff23ac3d5c01404ef5dd5c1bb3b0263fb954f13",
+     "bytes": 39627260,
+     "members": 138
+    }
+   ]
+  },
+  {
+   "id": "saxophones",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 103720604,
+   "sample_count": 144,
+   "instruments": [
+    {
+     "id": "katalyst.curved-soprano-sax",
+     "name": "Curved Soprano Sax",
+     "category": "woodwinds",
+     "kif": "saxophones/curved-soprano-sax.kif.json",
+     "kif_sha256": "d731473b66f99c1e299f2f6bff390d6df7d30cb898b6d7b475baa877efe9d965",
+     "kif_bytes": 45220
+    },
+    {
+     "id": "katalyst.tenor-sax",
+     "name": "Tenor Sax",
+     "category": "woodwinds",
+     "kif": "saxophones/tenor-sax.kif.json",
+     "kif_sha256": "ee026b025ad4ff52407c7f0d3f8b42212483a05b49013272b690259a8d2521ca",
+     "kif_bytes": 115708
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-saxophones-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-saxophones-1.0.0.tar.gz",
+     "sha256": "844df6607020e6f86b899c07fc1d22c37f4fe259840178b65e1411f4101fed58",
+     "bytes": 103644099,
+     "members": 146
+    }
+   ]
+  },
+  {
+   "id": "harps",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 25895840,
+   "sample_count": 103,
+   "instruments": [
+    {
+     "id": "katalyst.concert-harp",
+     "name": "Concert Harp",
+     "category": "strings",
+     "kif": "harps/concert-harp.kif.json",
+     "kif_sha256": "85a8c4aeb23c74d1d50022026270b5ce5b3489b5591f45fca8a5d003edbdacd1",
+     "kif_bytes": 47035
+    },
+    {
+     "id": "katalyst.folk-harp",
+     "name": "Folk Harp",
+     "category": "strings",
+     "kif": "harps/folk-harp.kif.json",
+     "kif_sha256": "a2d08828967e89ed5a21a16af98f8d7644f0ac3347068b2afdbfe77e1df47779",
+     "kif_bytes": 61571
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-harps-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-harps-1.0.0.tar.gz",
+     "sha256": "b6b54522233eab5ef314cb9c506117193705da10e0ce84558ce8dce60af83720",
+     "bytes": 23933667,
+     "members": 105
+    }
+   ]
+  },
+  {
+   "id": "world-instruments",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 59785299,
+   "sample_count": 184,
+   "instruments": [
+    {
+     "id": "katalyst.didgeridoo",
+     "name": "Didgeridoo",
+     "category": "woodwinds",
+     "kif": "world-instruments/didgeridoo.kif.json",
+     "kif_sha256": "dd13c33e078505ea6a2b34673d085ea2d4d9fe2c348db7c1f27f3f52d8908a30",
+     "kif_bytes": 13189
+    },
+    {
+     "id": "katalyst.strumstick",
+     "name": "Strumstick",
+     "category": "strings",
+     "kif": "world-instruments/strumstick.kif.json",
+     "kif_sha256": "cc4024f839f866c6919bccf1cf92395d4fc0167667553a668c0664474a878cb2",
+     "kif_bytes": 59956
+    },
+    {
+     "id": "katalyst.vietnamese-zither",
+     "name": "Vietnamese Zither",
+     "category": "strings",
+     "kif": "world-instruments/vietnamese-zither.kif.json",
+     "kif_sha256": "86bdaaf7e2895421880a7526b6c691fc9a2ced08965f4cc8557f61da2abd7421",
+     "kif_bytes": 108039
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-world-instruments-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-world-instruments-1.0.0.tar.gz",
+     "sha256": "22142e930be5108ed5e2dcd75ed58d6f0ea5c3a094b1d5d8ada27070e05b12da",
+     "bytes": 58941530,
+     "members": 187
+    }
+   ]
+  },
+  {
+   "id": "african-instruments",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 58353661,
+   "sample_count": 163,
+   "instruments": [
+    {
+     "id": "katalyst.balafon",
+     "name": "Balafon",
+     "category": "mallets",
+     "kif": "african-instruments/balafon.kif.json",
+     "kif_sha256": "23878ccaac75084051beb0c2ee1befe50471464e5e70b3944d4657b4a1840474",
+     "kif_bytes": 57826
+    },
+    {
+     "id": "katalyst.kalimba-kenya",
+     "name": "Kalimba (Kenya)",
+     "category": "mallets",
+     "kif": "african-instruments/kalimba-kenya.kif.json",
+     "kif_sha256": "de3c5e1c471a1228edea441d95fdfc3ec0057fffe0f46bd0eeb8b9a69997ab0a",
+     "kif_bytes": 18110
+    },
+    {
+     "id": "katalyst.kalimba-tanzania",
+     "name": "Kalimba (Tanzania)",
+     "category": "mallets",
+     "kif": "african-instruments/kalimba-tanzania.kif.json",
+     "kif_sha256": "0b84f36615dd2e42d00296a57fa4c3b07947132a1a1016fb7124aee52a80b12d",
+     "kif_bytes": 30352
+    },
+    {
+     "id": "katalyst.mbira-gandanga",
+     "name": "Mbira (Gandanga)",
+     "category": "mallets",
+     "kif": "african-instruments/mbira-gandanga.kif.json",
+     "kif_sha256": "4295a3ead951f793e1ed59bc092c0d332da58148d909df6465656a80ef90a9c6",
+     "kif_bytes": 27601
+    },
+    {
+     "id": "katalyst.mbira-nyamaropa",
+     "name": "Mbira dzaVadzimu",
+     "category": "mallets",
+     "kif": "african-instruments/mbira-nyamaropa.kif.json",
+     "kif_sha256": "bafeb71a740acde564e21a89f99c589dade34a8bfa71ab1709302096e75af3c3",
+     "kif_bytes": 27768
+    },
+    {
+     "id": "katalyst.nyunga-nyunga",
+     "name": "Nyunga Nyunga",
+     "category": "mallets",
+     "kif": "african-instruments/nyunga-nyunga.kif.json",
+     "kif_sha256": "de24d4131f17089dd9a857d36b40a19f26300ee603359beb733b04b9a199e223",
+     "kif_bytes": 22653
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-african-instruments-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-african-instruments-1.0.0.tar.gz",
+     "sha256": "e74992ecac773acded3d9b3e9a2647da31a448bca4459ba10df5e999fa7c13d6",
+     "bytes": 57960256,
+     "members": 169
+    }
+   ]
+  },
+  {
+   "id": "percussion-extras",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 4533931,
+   "sample_count": 78,
+   "instruments": [
+    {
+     "id": "katalyst.world-percussion",
+     "name": "World Percussion",
+     "category": "percussion",
+     "kif": "percussion-extras/world-percussion.kif.json",
+     "kif_sha256": "f5b8a2ca9bf75c2a4758ce04cc3b699187e3fad959f9f8200052b95d8aeb4cc4",
+     "kif_bytes": 84002
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-percussion-extras-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-percussion-extras-1.0.0.tar.gz",
+     "sha256": "fe21a8f89df978865c800263d5802072e421295ee4d54dd304e0065054050a6b",
+     "bytes": 3656760,
+     "members": 79
+    }
+   ]
+  },
+  {
+   "id": "sound-effects",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 47430838,
+   "sample_count": 90,
+   "instruments": [
+    {
+     "id": "katalyst.sound-effects",
+     "name": "Sound Effects",
+     "category": "other",
+     "kif": "sound-effects/sound-effects.kif.json",
+     "kif_sha256": "c0cc762b2c98d4420cbf92f489cd55e2084b45baada0c461db9611a7cf26b7c4",
+     "kif_bytes": 81973
+    },
+    {
+     "id": "katalyst.wine-glasses",
+     "name": "Wine Glasses",
+     "category": "other",
+     "kif": "sound-effects/wine-glasses.kif.json",
+     "kif_sha256": "202552d792033a559abeab270e3fb44b2ee3c4d52597b94643cdef32a8221c13",
+     "kif_bytes": 19035
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-sound-effects-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-sound-effects-1.0.0.tar.gz",
+     "sha256": "fc3ac9cb55e9fee7004301d0e1fc2543634401d12e755e9378f8bb58386ef7d0",
+     "bytes": 47061228,
+     "members": 92
+    }
+   ]
+  },
+  {
+   "id": "piccolo",
+   "version": "1.0.0",
+   "library": "vsco2-ce",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VSCO-2-CE",
+    "audio_commit": "6dd651d55dde97fd4028699be9d4481f26917891",
+    "mapping_commit": "6dd651d55dde97fd4028699be9d4481f26917891"
+   },
+   "installed_bytes": 7540640,
+   "sample_count": 10,
+   "instruments": [
+    {
+     "id": "katalyst.piccolo",
+     "name": "Piccolo",
+     "category": "woodwinds",
+     "kif": "piccolo/piccolo.kif.json",
+     "kif_sha256": "eeb747b60a53e858508c6e624376cec9133a6e9212321ff38f6120136aa58c99",
+     "kif_bytes": 12023
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-piccolo-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-piccolo-1.0.0.tar.gz",
+     "sha256": "873bbd3e020b788be9efe829bf0d99ec7eb188c385b4188c746310d2c6cbf3fb",
+     "bytes": 7536337,
+     "members": 11
+    }
+   ]
+  },
+  {
+   "id": "banjo",
+   "version": "1.0.0",
+   "library": "ganjo",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sfzinstruments/ganjo",
+    "audio_commit": "ccff5cd5cd3b513873a48994c07724d9d3c39e1c",
+    "mapping_commit": "ccff5cd5cd3b513873a48994c07724d9d3c39e1c"
+   },
+   "installed_bytes": 7923993,
+   "sample_count": 58,
+   "instruments": [
+    {
+     "id": "katalyst.six-string-banjo",
+     "name": "Six-String Banjo",
+     "category": "strings",
+     "kif": "banjo/six-string-banjo.kif.json",
+     "kif_sha256": "e2747057e0e6b2a66daaf3922deb65b77586add2b3957cdb190b1400890bc789",
+     "kif_bytes": 56273
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-banjo-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-banjo-1.0.0.tar.gz",
+     "sha256": "792b1786070d4b336844696a683b3ca2f4206eec7cb99440204e1fbabebaa254",
+     "bytes": 7884297,
+     "members": 59
+    }
+   ]
+  },
+  {
+   "id": "vintage-electric-pianos",
+   "version": "1.0.0",
+   "library": "greg-sullivan-epianos",
+   "licence": {
+    "spdx": "CC-BY-3.0",
+    "verdict": "GREEN",
+    "attribution": "\"Greg Sullivan's E-Pianos\" (electric grand, pad-plucked and reed electric pianos) by Greg Sullivan (http://www.sullivang.net/), SFZ mapping by kinwie (https://github.com/sfzinstruments/GregSullivan.E-Pianos).",
+    "uri": "https://creativecommons.org/licenses/by/3.0/",
+    "modifications": "samples converted to FLAC, loudness-normalised and trimmed; the SFZ mappings converted to KIF; instrument names changed to descriptive, brand-free names."
+   },
+   "release_tag": "instruments-cc-by-v1",
+   "source": {
+    "repo": "sfzinstruments/GregSullivan.E-Pianos",
+    "audio_commit": "8c3e581acda3594b553948ff0222d4f84a698376",
+    "mapping_commit": "8c3e581acda3594b553948ff0222d4f84a698376"
+   },
+   "installed_bytes": 19106183,
+   "sample_count": 172,
+   "instruments": [
+    {
+     "id": "katalyst.electric-grand",
+     "name": "Electric Grand",
+     "category": "keys",
+     "kif": "vintage-electric-pianos/electric-grand.kif.json",
+     "kif_sha256": "4d21861bd3104c1b27daf8de5d6ccef7eb068f1de5528f3129adf68f11908fae",
+     "kif_bytes": 73875
+    },
+    {
+     "id": "katalyst.pad-plucked-electric-piano",
+     "name": "Pad-Plucked Electric Piano",
+     "category": "keys",
+     "kif": "vintage-electric-pianos/pad-plucked-electric-piano.kif.json",
+     "kif_sha256": "722d9a4eec41a60aed3b6e6e7246683512aec2d2b5a03e693069e4ad1bae16a9",
+     "kif_bytes": 46109
+    },
+    {
+     "id": "katalyst.sampled-reed-electric-piano",
+     "name": "Sampled Reed Electric Piano",
+     "category": "keys",
+     "kif": "vintage-electric-pianos/sampled-reed-electric-piano.kif.json",
+     "kif_sha256": "3556101d73c993bc68ce3f4063ecd3ca0973533ab800eb87855b7cf5bd68eda9",
+     "kif_bytes": 41376
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-vintage-electric-pianos-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc-by-v1/katalyst-vintage-electric-pianos-1.0.0.tar.gz",
+     "sha256": "993d25fdecdf0c43916524257830fb9f04eadc78a696a60cf88afe9ef0a5afce",
+     "bytes": 17999928,
+     "members": 175
+    }
+   ]
   }
  ]
 }
