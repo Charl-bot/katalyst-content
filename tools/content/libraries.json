@@ -1,5 +1,5 @@
 {
-  "comment": "Pinned CC0 upstream libraries (owner decision 28 Oct 2026, D-193). Audio and LICENSE are taken from audio_commit; SFZ mappings from mapping_commit. A referenced sample must have the same git blob id at both commits or the build fails. Paths matching any 'exclude' pattern are fatal unless listed in 'allow' with a reason. VCSL: the Yamaha upright is not used because its samples on the sfz branch (a commit without a LICENSE file) differ from master (D-195).",
+  "comment": "Pinned upstream libraries: CC0, and since D-391 CC BY 3.0 / 4.0 with the attribution line, licence URI and statement of changes the licence asks for (owner decision 28 Oct 2026, D-193; D-391). Audio and LICENSE are taken from audio_commit; SFZ mappings from mapping_commit. A referenced sample must have the same git blob id at both commits or the build fails. Paths matching any 'exclude' pattern are fatal unless listed in 'allow' with a reason. VCSL: the Yamaha upright is not used because its samples on the sfz branch (a commit without a LICENSE file) differ from master (D-195).",
   "global_exclude": [
     "(?i)karoryfer",
     "(?i)vsco[ _-]?2[ _-]?pro",
@@ -59,6 +59,24 @@
         "(?i)/perc/",
         "(?i)\\.bank\\.xml$"
       ],
+      "allow": []
+    },
+    {
+      "id": "salamander-grand",
+      "title": "Salamander Grand Piano V3",
+      "publisher": "Alexander Holm (recording); SFZ remap by kinwie (sfzinstruments)",
+      "repo": "sfzinstruments/SalamanderGrandPiano",
+      "source_url": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+      "audio_commit": "3382bf9496bba2486f5ab0de55a264d1dfc38404",
+      "audio_ref": "master",
+      "mapping_commit": "3382bf9496bba2486f5ab0de55a264d1dfc38404",
+      "mapping_ref": "master",
+      "licence_spdx": "CC-BY-3.0",
+      "licence_file": "LICENSE",
+      "licence_uri": "https://creativecommons.org/licenses/by/3.0/",
+      "attribution": "\"Salamander Grand Piano V3\" by Alexander Holm (https://archive.org/details/SalamanderGrandPianoV3), SFZ remap by kinwie (https://github.com/sfzinstruments/SalamanderGrandPiano).",
+      "modifications": "samples converted to FLAC, loudness-normalised and trimmed; the SFZ mapping converted to KIF with the natural tuning only; hammer-noise and string-resonance release samples kept, pedal noise omitted.",
+      "exclude": [],
       "allow": []
     }
   ]

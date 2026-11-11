@@ -194,6 +194,42 @@ class SyntheticUpstream(unittest.TestCase):
         with self.assertRaisesRegex(ProvenanceError, "not the CC0"):
             plan.plan_pack(self.pack, lib, self.global_exclude, Upstream(lib, self.up.clone, self.tmp / "raw2"))
 
+    def test_cc_by_needs_its_text_attribution_and_uri(self):
+        """D-391: a CC BY library passes only with the CC BY text at the pin, an attribution line and the licence URI;
+        its KIF carries the attribution, the licence URI and the statement of changes."""
+        by_text = (self.tmp / "upstream" / "BY-LICENSE.txt")
+        by_text.write_text("Creative Commons Legal Code\n\nAttribution 3.0 Unported\n\n"
+                           "Subject to the terms and conditions of this License, Licensor hereby grants You a worldwide, "
+                           "royalty-free, non-exclusive, perpetual (for the duration of the applicable copyright) license.\n")
+        git(self.tmp / "upstream", "add", ".")
+        git(self.tmp / "upstream", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "by")
+        commit = subprocess.run(["git", "-C", str(self.tmp / "upstream"), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+        # the extra licence-like file is a second licence file for the CC0 case; point the BY library at it
+        base = dict(self.lib, audio_commit=commit, mapping_commit=commit, licence_spdx="CC-BY-3.0", licence_file="BY-LICENSE.txt")
+        up = lambda lib, n: Upstream(lib, self.up.clone, self.tmp / n)
+        with self.assertRaisesRegex(ProvenanceError, "unexpected licence files|attribution"):
+            plan.plan_pack(self.pack, base, self.global_exclude, up(base, "raw3"))
+        with self.assertRaisesRegex(ProvenanceError, "not allowed"):
+            lib = dict(base, licence_spdx="CC-BY-NC-4.0")
+            plan.plan_pack(self.pack, lib, self.global_exclude, up(lib, "raw4"))
+        with self.assertRaisesRegex(ProvenanceError, "licence_uri"):
+            lib = dict(base, attribution="Work by A.", licence_uri="https://example.com/")
+            plan.verify_licence(up(lib, "raw5"))
+        lib = dict(base, attribution="Work by A. Author.", licence_uri="https://creativecommons.org/licenses/by/3.0/")
+        with self.assertRaisesRegex(ProvenanceError, "unexpected licence files"):
+            plan.verify_licence(up(lib, "raw6"))  # LICENSE (the CC0 text) is still in the tree: review it
+        from kif import pipeline
+
+        class _P:  # only the licence block is under test
+            pass
+        pp = _P()
+        pp.lib = lib
+        block = pipeline._kif_licence(pp)
+        self.assertEqual(block["spdx"], "CC-BY-3.0")
+        for needle in ("Work by A. Author.", "https://creativecommons.org/licenses/by/3.0/", "Changes by Katalyst Suite"):
+            self.assertIn(needle, block["note"])
+        self.assertEqual(pipeline._manifest_licence(lib)["uri"], "https://creativecommons.org/licenses/by/3.0/")
+
     def test_validator_catches_tampering(self):
         doc = json.loads(json.dumps(self.kif))
         doc["samples"][0]["sha256"] = "0" * 64

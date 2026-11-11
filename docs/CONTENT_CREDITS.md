@@ -1,8 +1,9 @@
 # Katalyst Suite: sound content credits
 
-Katalyst's downloadable sampled instruments (the "CC0 set v1") are built from the public-domain sample libraries below.
+Katalyst's downloadable sampled instruments are built from the sample libraries below. Two sets exist:
 
-Those libraries are dedicated to the public domain under **CC0 1.0 Universal**. No attribution is legally required. We credit them anyway as a courtesy and to document where every sound came from.
+- **The CC0 set** (release `instruments-cc0-v1`). These libraries are dedicated to the public domain under **CC0 1.0 Universal**. No attribution is legally required. We credit them anyway as a courtesy and to document where every sound came from.
+- **The CC BY set** (release `instruments-cc-by-v1`, D-391). These libraries are licensed under **Creative Commons Attribution** (3.0 or 4.0). Attribution **is** required, and this file, the in-app Credits screen and each instrument's KIF `licence.note` carry it. Only CC BY is accepted; NonCommercial, NoDerivatives and ShareAlike material is refused by the build (`tools/content/kif/plan.py`).
 
 CC0 does not grant trademark rights, so our instrument names describe the instrument and use no brand names.
 
@@ -29,9 +30,9 @@ Per-file provenance: `content/provenance/<library>/provenance.json` records the 
   - SFZ mappings: branch `sfz`, commit `dfcf4a4918771eee884b96ad4493de82ef84daf6`
   - Every sample we use is byte-identical at both commits.
 - **Used in:**
-  - Concert Grand, Studio Upright, Flemish Harpsichord, Pipe Organ
-  - Marimba, Vibraphone, Xylophone, Glockenspiel
-  - Timpani, Orchestral Percussion
+  - Concert Grand, Studio Upright, Bright Grand, Flemish Harpsichord, Pipe Organ
+  - Marimba, Vibraphone, Xylophone, Glockenspiel, Tubular Bells
+  - Timpani, Orchestral Percussion, Hand Percussion
 - **Not used:** the TX81Z recordings (recordings of a hardware synthesizer's factory patches) and the other `Electrophones`.
 
 ## Virtuosity Drums
@@ -43,6 +44,20 @@ Per-file provenance: `content/provenance/<library>/provenance.json` records the 
 - **Not used:**
   - the auxiliary percussion (`Samples/perc`). The upstream README credits it to VSCO 2 Pro and Karoryfer, which are outside this CC0-only set.
   - the GUI artwork (`GUI/`) and the plugin bank file.
+
+## Salamander Grand Piano V3 (CC BY 3.0, attribution required)
+
+- **By:** Alexander Holm (recording). The SFZ remap used here is by kinwie (the `sfzinstruments` project).
+- **Title and source of the work:** "Salamander Grand Piano V3", <https://archive.org/details/SalamanderGrandPianoV3>; the remap is at <https://github.com/sfzinstruments/SalamanderGrandPiano>, commit `3382bf9496bba2486f5ab0de55a264d1dfc38404`.
+- **Licence:** Creative Commons Attribution 3.0 Unported, <https://creativecommons.org/licenses/by/3.0/>. The licence text at the pinned commit is stored in `content/provenance/salamander-grand/LICENSE`.
+- **Used in:** Salamander Grand.
+- **Changes we made (as the licence asks us to say):** the samples were converted to FLAC, trimmed of leading silence and loudness-normalised by an instrument gain; the SFZ mapping was converted to the Katalyst Instrument Format with the natural tuning only (the upstream's retuned set is not used); the hammer-noise and string-resonance release samples are kept and the pedal-noise samples are left out. The recordings are otherwise unaltered.
+- **What this does not mean:** the author and the sfzinstruments project do not endorse Katalyst Suite or this adaptation.
+- **Technical measures:** the pack is downloaded as an ordinary `.tar.gz` and unpacked to plain FLAC and JSON files in the content folder. The SHA-256 checks only verify the download (integrity); nothing is encrypted or locked, so a person who has the pack can use the recordings as CC BY 3.0 section 4(a) allows. The licence for the recordings stays CC BY 3.0 whatever the licence of Katalyst Suite itself. The end-user licence agreement has to say so; it is not written yet (KI-1305).
+
+## Verified but not built: DrumGizmo kits
+
+Both kits are CC BY 4.0 and were checked on their project pages (11 Nov 2026): the **DRSKit** (13 microphones; the DrumGizmo team with Jes Eiler of DRSDrums) and the **MuldjordKit** (Lars Muldjord, 15 microphones). They are published in the DrumGizmo XML format, not SFZ, so they need a converter before they can become KIF packs (KI-1306). The MuldjordKit asks that credits or liner notes say "Drum samples provided by DrumGizmo.org". If either kit is ever shipped, that line goes in this file, the Credits screen and the release notes. Nothing from them is in a build.
 
 ## What we changed
 

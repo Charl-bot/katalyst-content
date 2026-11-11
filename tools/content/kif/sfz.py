@@ -30,12 +30,29 @@ HEADER_RE = re.compile(r"<([a-z]+)>")
 DEFINE_RE = re.compile(r"^\s*#define\s+(\$[A-Za-z0-9_]+)\s+(\S+)")
 INCLUDE_RE = re.compile(r'^\s*#include\s+"([^"]+)"')
 VAR_RE = re.compile(r"\$[A-Za-z0-9_]+")
+INLINE_INCLUDE_RE = re.compile(r'#include\s+"[^"]+"')
 
 LEVELS = ("control", "global", "master", "group", "region")
 
 
 class SfzError(ValueError):
     pass
+
+
+def _split_inline_includes(raw: str) -> List[str]:
+    """A line with ``#include "x"`` after other text becomes [text, '#include "x"', text, ...]; others stay whole."""
+    if DEFINE_RE.match(raw) or not INLINE_INCLUDE_RE.search(raw):
+        return [raw]
+    out: List[str] = []
+    pos = 0
+    for m in INLINE_INCLUDE_RE.finditer(raw):
+        if raw[pos : m.start()].strip():
+            out.append(raw[pos : m.start()])
+        out.append(m.group(0))
+        pos = m.end()
+    if raw[pos:].strip():
+        out.append(raw[pos:])
+    return out
 
 
 def note_to_midi(value: str) -> int:
@@ -116,24 +133,29 @@ def parse(
         lines = _strip_comments(text).splitlines()
         for lineno, raw in enumerate(lines, 1):
             origin = f"{path}:{lineno}"
-            d = DEFINE_RE.match(raw)
-            if d:
-                defines[d.group(1)] = d.group(2)
-                continue
-            inc = INCLUDE_RE.match(raw)
-            if inc:
-                target = VAR_RE.sub(lambda m: defines.get(m.group(0), m.group(0)), inc.group(1))
-                expand(posixpath.normpath(posixpath.join(root_dir, target)), depth + 1)
-                continue
-            line = VAR_RE.sub(lambda m: _subst(m.group(0), defines, origin), raw)
-            pos = 0
-            for h in HEADER_RE.finditer(line):
-                for k, v in _split_opcodes(line[pos : h.start()]):
+            # An #include may sit inside a line: ``<group> #include "vel.txt" lovel=1 #include "region.txt"``
+            # (Salamander Grand). Split there, so each piece runs in order and a #define from the first file
+            # is visible to the text after it.
+            pieces = _split_inline_includes(raw)
+            for piece in pieces:
+                d = DEFINE_RE.match(piece)
+                if d:
+                    defines[d.group(1)] = d.group(2)
+                    continue
+                inc = INCLUDE_RE.match(piece)
+                if inc:
+                    target = VAR_RE.sub(lambda m: defines.get(m.group(0), m.group(0)), inc.group(1))
+                    expand(posixpath.normpath(posixpath.join(root_dir, target)), depth + 1)
+                    continue
+                line = VAR_RE.sub(lambda m: _subst(m.group(0), defines, origin), piece)
+                pos = 0
+                for h in HEADER_RE.finditer(line):
+                    for k, v in _split_opcodes(line[pos : h.start()]):
+                        tokens.append(("op", (k, v), origin))
+                    tokens.append(("header", h.group(1), origin))
+                    pos = h.end()
+                for k, v in _split_opcodes(line[pos:]):
                     tokens.append(("op", (k, v), origin))
-                tokens.append(("header", h.group(1), origin))
-                pos = h.end()
-            for k, v in _split_opcodes(line[pos:]):
-                tokens.append(("op", (k, v), origin))
 
     expand(root_file, 0)
     result.defines = dict(defines)
