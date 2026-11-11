@@ -138,6 +138,8 @@ for tag in $(printf '%s\n' "${PARTS[@]}" | cut -f5 | sort -u); do
     gh release create "$tag" --repo "$REPO_SLUG" --prerelease --title "$title" \
       --notes-file "$ROOT/docs/CONTENT_CREDITS.md"
   fi
+  # The notes are the credits: refresh them on every publish so a newly added CC BY work is credited there too.
+  gh release edit "$tag" --repo "$REPO_SLUG" --notes-file "$ROOT/docs/CONTENT_CREDITS.md" >/dev/null
   EXISTING[$tag]="$(gh release view "$tag" --repo "$REPO_SLUG" --json assets --jq '.assets[].name')"
 done
 
