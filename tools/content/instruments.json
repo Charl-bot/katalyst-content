@@ -291,9 +291,18 @@
               "key_range": [0, 35],
               "drop": ["non-vibrato"]
             },
-            { "sfz": "CelloEns-KS.sfz", "key_range": [36, 47] },
-            { "sfz": "ViolaEns-KS.sfz", "key_range": [48, 54] },
-            { "sfz": "ViolinEns-KS.sfz", "key_range": [55, 127] }
+            {
+              "sfz": "CelloEns-KS.sfz",
+              "key_range": [36, 47]
+            },
+            {
+              "sfz": "ViolaEns-KS.sfz",
+              "key_range": [48, 54]
+            },
+            {
+              "sfz": "ViolinEns-KS.sfz",
+              "key_range": [55, 127]
+            }
           ],
           "articulations": [
             {
@@ -710,7 +719,10 @@
           "category": "piano",
           "description": "Concert-size grand piano close-miked in an AB pair, sixteen velocity layers in minor thirds, with key-release hammer noise and string resonance. CC BY 3.0.",
           "parts": [
-            { "sfz": "Salamander Grand Piano V3.sfz", "drop": ["^retuned$"] }
+            {
+              "sfz": "Salamander Grand Piano V3.sfz",
+              "drop": ["^retuned$"]
+            }
           ],
           "articulations": [
             { "id": "natural", "name": "Natural", "match": "^natural$" }
@@ -835,6 +847,666 @@
             }
           ],
           "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "recorders",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "soprano-recorder",
+          "name": "Soprano Recorder",
+          "category": "woodwinds",
+          "description": "Baroque soprano recorder: sustain and staccato, switched from C3.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Baroque Soprano Recorder - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "^sustain$",
+              "default": true
+            },
+            { "id": "staccato", "name": "Staccato", "match": "^staccato$" }
+          ]
+        },
+        {
+          "id": "alto-recorder",
+          "name": "Alto Recorder",
+          "category": "woodwinds",
+          "description": "Baroque alto recorder: sustain, sustain with vibrato and staccato, switched from C3.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Baroque Alto Recorder - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "^sustain$",
+              "default": true
+            },
+            {
+              "id": "sustain-vib",
+              "name": "Sustain Vibrato",
+              "match": "^susvib$"
+            },
+            { "id": "staccato", "name": "Staccato", "match": "^staccato$" }
+          ]
+        },
+        {
+          "id": "tenor-recorder",
+          "name": "Tenor Recorder",
+          "category": "woodwinds",
+          "description": "Baroque tenor recorder: sustain, sustain with vibrato and staccato, switched from C3.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "^sustain$",
+              "default": true
+            },
+            {
+              "id": "sustain-vib",
+              "name": "Sustain Vibrato",
+              "match": "^susvib$"
+            },
+            { "id": "staccato", "name": "Staccato", "match": "^staccato$" }
+          ]
+        },
+        {
+          "id": "bass-recorder",
+          "name": "Bass Recorder",
+          "category": "woodwinds",
+          "description": "Baroque bass recorder: sustain, sustain with vibrato and staccato, switched from C3.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Baroque Bass Recorder - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "^sustain$",
+              "default": true
+            },
+            {
+              "id": "sustain-vib",
+              "name": "Sustain Vibrato",
+              "match": "^susvib$"
+            },
+            { "id": "staccato", "name": "Staccato", "match": "^staccato$" }
+          ]
+        },
+        {
+          "id": "ocarina",
+          "name": "Ocarina",
+          "category": "woodwinds",
+          "description": "Clay ocarina, plain and with vibrato, switched from C3.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Ocarina, Typical - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "match": "^sus$",
+              "default": true
+            },
+            {
+              "id": "sustain-vib",
+              "name": "Sustain Vibrato",
+              "match": "^susvib$"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "harmonicas",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "diatonic-harmonica",
+          "name": "Diatonic Harmonica",
+          "category": "woodwinds",
+          "description": "Ten-hole diatonic harmonica in C: normal, soft and vibrato, switched from C3.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Free Aerophones/Harmonica-Hohner-Special20-C - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "normal",
+              "name": "Normal",
+              "match": "^normal$",
+              "default": true
+            },
+            { "id": "soft", "name": "Soft", "match": "^soft$" },
+            { "id": "vibrato", "name": "Vibrato", "match": "^vib$" }
+          ]
+        },
+        {
+          "id": "chromatic-harmonica",
+          "name": "Chromatic Harmonica",
+          "category": "woodwinds",
+          "description": "Sixteen-hole chromatic harmonica: normal, accented and vibrato, switched from C2.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Free Aerophones/Harmonica-Hohner-Super64 - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "normal",
+              "name": "Normal",
+              "match": "^normal$",
+              "default": true
+            },
+            { "id": "accented", "name": "Accented", "match": "^accented$" },
+            { "id": "vibrato", "name": "Vibrato", "match": "^vib$" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "saxophones",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "tenor-sax",
+          "name": "Tenor Sax",
+          "category": "woodwinds",
+          "description": "Tenor saxophone: vibrato, straight and staccato, switched from C2.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Reed Aerophones/Tenor Saxophone - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "vibrato",
+              "name": "Vibrato",
+              "match": "^vibrato$",
+              "default": true
+            },
+            { "id": "straight", "name": "Straight", "match": "^non-vibrato$" },
+            { "id": "staccato", "name": "Staccato", "match": "^staccato$" }
+          ]
+        },
+        {
+          "id": "curved-soprano-sax",
+          "name": "Curved Soprano Sax",
+          "category": "woodwinds",
+          "description": "Curved soprano-range saxophone (saxello): vibrato, straight and staccato, switched from C3.",
+          "parts": [
+            { "sfz": "Aerophones/Reed Aerophones/Saxello - Keyswitch.sfz" }
+          ],
+          "articulations": [
+            {
+              "id": "vibrato",
+              "name": "Vibrato",
+              "match": "^vibrato$",
+              "default": true
+            },
+            { "id": "straight", "name": "Straight", "match": "^non-vibrato$" },
+            { "id": "staccato", "name": "Staccato", "match": "^staccato$" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "harps",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "concert-harp",
+          "name": "Concert Harp",
+          "category": "strings",
+          "description": "Pedal (concert) harp, plucked.",
+          "parts": [
+            {
+              "sfz": "Chordophones/Composite Chordophones/Concert Harp.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "folk-harp",
+          "name": "Folk Harp",
+          "category": "strings",
+          "description": "Lever (folk) harp, plucked: lighter and brighter than the concert harp.",
+          "parts": [
+            {
+              "sfz": "Chordophones/Composite Chordophones/Folk Harp.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "world-instruments",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "vietnamese-zither",
+          "name": "Vietnamese Zither",
+          "category": "strings",
+          "description": "Sixteen-string long zither (dan tranh), kin of the guzheng and koto: normal, tremolo, vibrato (bends), glissandi and effects, switched from C2.",
+          "parts": [
+            { "sfz": "Chordophones/Zithers/Dan Tranh - Keyswitch.sfz" }
+          ],
+          "articulations": [
+            {
+              "id": "normal",
+              "name": "Normal",
+              "match": "^normal$",
+              "default": true
+            },
+            { "id": "tremolo", "name": "Tremolo", "match": "^tremolo$" },
+            { "id": "vibrato", "name": "Vibrato", "match": "^vibrato$" },
+            { "id": "gliss", "name": "Glissando", "match": "^gliss$" },
+            { "id": "fx", "name": "Effects", "match": "^fx$" }
+          ]
+        },
+        {
+          "id": "strumstick",
+          "name": "Strumstick",
+          "category": "strings",
+          "description": "Three-string fretted folk dulcimer-style strumstick, plucked.",
+          "parts": [
+            {
+              "sfz": "Chordophones/Composite Chordophones/Strumstick.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "qa_notes": [
+            "Three low-string samples (F#2, G2) are reported as octave suspects: the pitch detector hears the strong second harmonic of the thin drone string. Not corrected (D-194)."
+          ]
+        },
+        {
+          "id": "didgeridoo",
+          "name": "Didgeridoo",
+          "category": "woodwinds",
+          "pitched": false,
+          "description": "Didgeridoo drones and rhythmic figures, one per key.",
+          "parts": [
+            {
+              "sfz": "Aerophones/Lip Aerophones/Didgeridoo.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "african-instruments",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "kalimba-kenya",
+          "name": "Kalimba (Kenya)",
+          "category": "mallets",
+          "description": "Kenyan thumb piano (kalimba), plucked tines.",
+          "parts": [
+            {
+              "sfz": "Idiophones/Plucked Idiophones/Kalimba, Kenya.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "kalimba-tanzania",
+          "name": "Kalimba (Tanzania)",
+          "category": "mallets",
+          "description": "Tanzanian thumb piano (kalimba), plucked tines.",
+          "parts": [
+            {
+              "sfz": "Idiophones/Plucked Idiophones/Kalimba, Tanzania.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "mbira-nyamaropa",
+          "name": "Mbira dzaVadzimu",
+          "category": "mallets",
+          "description": "Zimbabwean mbira dzaVadzimu in the Nyamaropa tuning, lowest note B.",
+          "parts": [
+            {
+              "sfz": "Idiophones/Plucked Idiophones/Mbira dzaVadzimu Nyamaropa, Zimbabwe, Low B.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "mbira-gandanga",
+          "name": "Mbira (Gandanga)",
+          "category": "mallets",
+          "description": "Zimbabwean mbira (mavembe / gandanga tuning), lowest note G.",
+          "parts": [
+            {
+              "sfz": "Idiophones/Plucked Idiophones/Mbira Mavembe (Gandanga), Zimbabwe, Low G.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "nyunga-nyunga",
+          "name": "Nyunga Nyunga",
+          "category": "mallets",
+          "description": "Mozambican and Zimbabwean nyunga nyunga mbira, lowest note F.",
+          "parts": [
+            {
+              "sfz": "Idiophones/Plucked Idiophones/Nyunga Nyunga, Mozambique, Low F.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "balafon",
+          "name": "Balafon",
+          "category": "mallets",
+          "description": "West African balafon (gourd-resonated xylophone): traditional, soft and hard mallets, switched from C3.",
+          "parts": [
+            { "sfz": "Idiophones/Struck Idiophones/Balafon - Keyswitch.sfz" }
+          ],
+          "articulations": [
+            {
+              "id": "traditional",
+              "name": "Traditional Mallet",
+              "match": "^traditional mallet$",
+              "default": true
+            },
+            { "id": "soft", "name": "Soft Mallet", "match": "^soft mallet$" },
+            { "id": "hard", "name": "Hard Mallet", "match": "^hard mallet$" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "percussion-extras",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "world-percussion",
+          "name": "World Percussion",
+          "category": "percussion",
+          "pitched": false,
+          "description": "Darbuka (C1-E1), slit drum, agogo bells, Nepalese hand bells and two concert toms (C2-B2) on one keyboard.",
+          "parts": [
+            {
+              "sfz": "Membranophones/Struck Membranophones/Darbuka.sfz",
+              "articulation": "normal",
+              "key_shift": -24,
+              "label": "Darbuka"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Slit Drum.sfz",
+              "articulation": "normal",
+              "key_shift": -19,
+              "label": "Slit drum"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Agogo Bells.sfz",
+              "articulation": "normal",
+              "key_shift": -17,
+              "label": "Agogo"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Hand Bells, Nepalese.sfz",
+              "articulation": "normal",
+              "key_shift": -15,
+              "label": "Hand bells"
+            },
+            {
+              "sfz": "Membranophones/Struck Membranophones/Tom 1.sfz",
+              "articulation": "normal",
+              "key_shift": -12,
+              "label": "Concert tom 1"
+            },
+            {
+              "sfz": "Membranophones/Struck Membranophones/Tom 2.sfz",
+              "articulation": "normal",
+              "key_shift": -6,
+              "label": "Concert tom 2"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "sound-effects",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "sound-effects",
+          "name": "Sound Effects",
+          "category": "other",
+          "pitched": false,
+          "description": "Ocean drum (surf, C1-D1), siren, toy train whistle, ball whistle, ratchet, vibraslap, flexatone, anvil, brake drum, finger cymbals, mark trees and bell tree (to F4) on one keyboard.",
+          "parts": [
+            {
+              "sfz": "Membranophones/Other Membranophones/Ocean Drum.sfz",
+              "articulation": "normal",
+              "key_shift": -24,
+              "label": "Ocean drum"
+            },
+            {
+              "sfz": "Aerophones/Free Aerophones/Siren.sfz",
+              "articulation": "normal",
+              "key_shift": -21,
+              "label": "Siren"
+            },
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Train Whistle, Toy.sfz",
+              "articulation": "normal",
+              "key_shift": -16,
+              "label": "Train whistle"
+            },
+            {
+              "sfz": "Aerophones/Edge-blown Aerophones/Ball Whistle.sfz",
+              "articulation": "normal",
+              "key_shift": -10,
+              "label": "Ball whistle"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Ratchet.sfz",
+              "articulation": "normal",
+              "key_shift": -8,
+              "label": "Ratchet"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Vibraslap.sfz",
+              "articulation": "normal",
+              "key_shift": -2,
+              "label": "Vibraslap"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Flexatone.sfz",
+              "articulation": "normal",
+              "key_shift": -1,
+              "label": "Flexatone"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Anvil.sfz",
+              "articulation": "normal",
+              "key_shift": 7,
+              "label": "Anvil"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Brake Drum.sfz",
+              "articulation": "normal",
+              "key_shift": 10,
+              "label": "Brake drum"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Finger Cymbals.sfz",
+              "articulation": "normal",
+              "key_shift": 18,
+              "label": "Finger cymbals"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Mark Trees.sfz",
+              "articulation": "normal",
+              "key_shift": 19,
+              "label": "Mark trees"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Bell Tree - Stroke.sfz",
+              "articulation": "normal",
+              "key_shift": 25,
+              "label": "Bell tree"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        },
+        {
+          "id": "wine-glasses",
+          "name": "Wine Glasses",
+          "category": "other",
+          "description": "Rubbed wine glasses (glass harp), slow and fast, switched from C2.",
+          "parts": [
+            {
+              "sfz": "Idiophones/Friction Idiophones/Wine Glasses - Keyswitch.sfz"
+            }
+          ],
+          "articulations": [
+            {
+              "id": "slow",
+              "name": "Slow",
+              "match": "^slow$",
+              "default": true
+            },
+            { "id": "fast", "name": "Fast", "match": "^fast$" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "piccolo",
+      "library": "vsco2-ce",
+      "instruments": [
+        {
+          "id": "piccolo",
+          "name": "Piccolo",
+          "category": "woodwinds",
+          "description": "Orchestral piccolo: sustain and staccato, switched from C2.",
+          "parts": [
+            {
+              "sfz": "PiccoloSus.sfz",
+              "articulation": "sustain",
+              "key_shift": 12,
+              "why": "Upstream maps written pitch; the piccolo sounds an octave higher and every sample measures +12 semitones above its root. Mapped at concert pitch (as D-199 did for the xylophone)."
+            },
+            {
+              "sfz": "PiccoloStac.sfz",
+              "articulation": "staccato",
+              "key_shift": 12,
+              "why": "Upstream maps written pitch; the piccolo sounds an octave higher and every sample measures +12 semitones above its root. Mapped at concert pitch (as D-199 did for the xylophone)."
+            }
+          ],
+          "articulations": [
+            {
+              "id": "sustain",
+              "name": "Sustain",
+              "keyswitch": 36,
+              "default": true
+            },
+            { "id": "staccato", "name": "Staccato", "keyswitch": 37 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "banjo",
+      "library": "ganjo",
+      "instruments": [
+        {
+          "id": "six-string-banjo",
+          "name": "Six-String Banjo",
+          "category": "strings",
+          "description": "Six-string guitar banjo, plucked, with round robins on most notes. Tuned and played like a guitar.",
+          "parts": [{ "sfz": "ganjo.sfz", "articulation": "normal" }],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "vintage-electric-pianos",
+      "library": "greg-sullivan-epianos",
+      "release": { "tag": "instruments-cc-by-v1" },
+      "instruments": [
+        {
+          "id": "electric-grand",
+          "name": "Electric Grand",
+          "category": "keys",
+          "description": "Electro-acoustic stage grand: struck strings with pickups, bright and percussive. CC BY 3.0.",
+          "parts": [{ "sfz": "CP80/CP80.sfz", "articulation": "normal" }],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "controls": [{ "cc": 64, "name": "Sustain pedal", "default": 0 }],
+          "qa_notes": [
+            "Upstream ARIA controls (volume, pan, release and velocity-tracking CCs) are not carried over; the sampler's own controls replace them.",
+            "Upstream 'end' points that shorten a few top-octave and release samples, and the release group's group_volume (-2 dB, pad-plucked piano), are not applied: those samples play to their end and the releases are about 2 dB louder than upstream.",
+            "One upstream sample has a clipping run (reported in the QA, not repaired)."
+          ]
+        },
+        {
+          "id": "pad-plucked-electric-piano",
+          "name": "Pad-Plucked Electric Piano",
+          "category": "keys",
+          "description": "Reeds plucked by sticky pads under an electromagnetic pickup: short, woody and funky. CC BY 3.0.",
+          "parts": [
+            { "sfz": "Pianet T/Pianet T.sfz", "articulation": "normal" }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "qa_notes": [
+            "Upstream ARIA controls (volume, pan, release and velocity-tracking CCs) are not carried over; the sampler's own controls replace them.",
+            "Upstream 'end' points that shorten a few top-octave and release samples, and the release group's group_volume (-2 dB, pad-plucked piano), are not applied: those samples play to their end and the releases are about 2 dB louder than upstream."
+          ]
+        },
+        {
+          "id": "sampled-reed-electric-piano",
+          "name": "Sampled Reed Electric Piano",
+          "category": "keys",
+          "description": "Recorded reed electric piano with its electrostatic pickup bark. CC BY 3.0.",
+          "parts": [
+            {
+              "sfz": "Wurlitzer EP200/Wurlitzer EP200.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "controls": [{ "cc": 64, "name": "Sustain pedal", "default": 0 }],
+          "qa_notes": [
+            "Upstream ARIA controls (volume, pan, release and velocity-tracking CCs) are not carried over; the sampler's own controls replace them.",
+            "Upstream 'end' points that shorten a few top-octave and release samples, and the release group's group_volume (-2 dB, pad-plucked piano), are not applied: those samples play to their end and the releases are about 2 dB louder than upstream."
+          ]
         }
       ]
     }
