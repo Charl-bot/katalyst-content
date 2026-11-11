@@ -20,6 +20,20 @@ CC0_MARKERS = (
     "Statement of Purpose",
     "Affirmer hereby overtly, fully, permanently, irrevocably and unconditionally waives",
 )
+# D-391: CC BY 3.0 / 4.0 libraries are allowed when the pinned commit carries the licence text and the library entry
+# records the attribution line and the licence URI the licence asks us to pass on. The NC / ND / SA texts are titled
+# differently ("Attribution-NonCommercial ..."), so they never match the title marker.
+LICENCE_MARKERS = {
+    "CC0-1.0": (CC0_MARKERS, None),
+    "CC-BY-3.0": (
+        ("Creative Commons Legal Code", "Attribution 3.0 Unported", "Licensor hereby grants You a worldwide, royalty-free, non-exclusive, perpetual"),
+        "https://creativecommons.org/licenses/by/3.0/",
+    ),
+    "CC-BY-4.0": (
+        ("Attribution 4.0 International", "Creative Commons Attribution 4.0 International Public License", "Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable"),
+        "https://creativecommons.org/licenses/by/4.0/",
+    ),
+}
 
 # Opcodes the converter maps into KIF. Everything else is counted and reported.
 HANDLED = {
@@ -128,14 +142,21 @@ class Excluder:
 def verify_licence(up: Upstream) -> Tuple[str, str]:
     import hashlib
 
+    spdx = up.lib["licence_spdx"]
+    if spdx not in LICENCE_MARKERS:
+        raise ProvenanceError(f"{up.id}: licence {spdx!r} is not allowed (D-193, D-391: CC0-1.0, CC-BY-3.0, CC-BY-4.0 only)")
+    markers, uri = LICENCE_MARKERS[spdx]
     lic_path = up.lib["licence_file"]
     text = up.text(lic_path, up.audio_commit)
     flat = " ".join(text.split())
-    for marker in CC0_MARKERS:
+    for marker in markers:
         if marker not in flat:
-            raise ProvenanceError(f"{up.repo}@{up.audio_commit[:12]} {lic_path} is not the CC0 1.0 text (missing {marker!r})")
-    if up.lib["licence_spdx"] != "CC0-1.0":
-        raise ProvenanceError(f"{up.id}: only CC0-1.0 libraries are allowed (D-193)")
+            raise ProvenanceError(f"{up.repo}@{up.audio_commit[:12]} {lic_path} is not the {spdx} text (missing {marker!r})")
+    if uri is not None:
+        if not up.lib.get("attribution"):
+            raise ProvenanceError(f"{up.id}: a {spdx} library needs an 'attribution' line (the licence requires it)")
+        if up.lib.get("licence_uri") != uri:
+            raise ProvenanceError(f"{up.id}: licence_uri must be {uri}")
     # Any other licence-like file in the tree must be reviewed: fail loudly.
     others = [
         p for p in up.tree(up.audio_commit)
@@ -144,6 +165,20 @@ def verify_licence(up: Upstream) -> Tuple[str, str]:
     if others:
         raise ProvenanceError(f"{up.id}: unexpected licence files at the pinned commit: {others}")
     return text, hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+REL_ONCC_RE = re.compile(r"^ampeg_release_oncc(\d+)$")
+
+
+def _release_from_cc(op: Dict[str, str], inst: dict) -> float:
+    """``ampeg_release_onccN=S`` adds S seconds at full CC N. KIF has no CC-driven envelope, so the instrument names the
+    upstream's default CC position in ``cc_defaults`` ({"72": 0.5}) and that release is baked in (Salamander Grand)."""
+    extra = 0.0
+    for k, v in op.items():
+        m = REL_ONCC_RE.match(k)
+        if m and m.group(1) in inst.get("cc_defaults", {}):
+            extra += float(v) * float(inst["cc_defaults"][m.group(1)])
+    return extra
 
 
 def _note(v: Optional[str], default: int) -> int:
@@ -213,7 +248,8 @@ def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) ->
                 op = region.opcodes
                 for k in op:
                     m = CC_COND_RE.match(k)
-                    if k not in HANDLED and not (m and int(m.group(2)) not in MIC_FADER_CCS):
+                    baked = REL_ONCC_RE.match(k) and REL_ONCC_RE.match(k).group(1) in inst.get("cc_defaults", {})
+                    if k not in HANDLED and not baked and not (m and int(m.group(2)) not in MIC_FADER_CCS):
                         ip.ignored_opcodes[k] += 1
                 if region.sample.startswith("*"):
                     if region.sample == "*silence" and "group" in op:
@@ -316,7 +352,7 @@ def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) ->
                     "hold": _f(op.get("ampeg_hold"), 0.0),
                     "decay": _f(op.get("ampeg_decay"), 0.0),
                     "sustain": _f(op.get("ampeg_sustain"), 100.0) / 100.0,
-                    "release": _f(op.get("ampeg_release"), 0.001),
+                    "release": _f(op.get("ampeg_release"), 0.001) + _release_from_cc(op, inst),
                 }
                 lm = op.get("loop_mode")
                 z = ZonePlan(

@@ -73,7 +73,12 @@
       "required": ["spdx", "verdict"],
       "properties": {
         "spdx": {
-          "enum": ["CC0-1.0", "LicenseRef-Katalyst-Owned"]
+          "enum": [
+            "CC0-1.0",
+            "CC-BY-3.0",
+            "CC-BY-4.0",
+            "LicenseRef-Katalyst-Owned"
+          ]
         },
         "verdict": {
           "const": "GREEN"

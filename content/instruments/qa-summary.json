@@ -374,6 +374,66 @@
    "pitch_measured": null,
    "octave_suspects": null,
    "clipped": 0
+  },
+  {
+   "instrument": "katalyst.salamander-grand",
+   "name": "Salamander Grand",
+   "pack": "salamander-grand",
+   "zones": 637,
+   "attack_zones": 480,
+   "release_zones": 157,
+   "samples": 637,
+   "bytes": 717778864,
+   "velocity_layers_max": 16,
+   "pitch_flagged": 169,
+   "pitch_measured": 457,
+   "octave_suspects": 0,
+   "clipped": 2
+  },
+  {
+   "instrument": "katalyst.bright-grand",
+   "name": "Bright Grand",
+   "pack": "bright-grand",
+   "zones": 222,
+   "attack_zones": 138,
+   "release_zones": 84,
+   "samples": 222,
+   "bytes": 44049635,
+   "velocity_layers_max": 4,
+   "pitch_flagged": 12,
+   "pitch_measured": 137,
+   "octave_suspects": 0,
+   "clipped": 0
+  },
+  {
+   "instrument": "katalyst.tubular-bells",
+   "name": "Tubular Bells",
+   "pack": "tubular-bells",
+   "zones": 18,
+   "attack_zones": 18,
+   "release_zones": 0,
+   "samples": 18,
+   "bytes": 32773030,
+   "velocity_layers_max": 2,
+   "pitch_flagged": 12,
+   "pitch_measured": 16,
+   "octave_suspects": 0,
+   "clipped": 0
+  },
+  {
+   "instrument": "katalyst.hand-percussion",
+   "name": "Hand Percussion",
+   "pack": "hand-percussion",
+   "zones": 146,
+   "attack_zones": 146,
+   "release_zones": 0,
+   "samples": 146,
+   "bytes": 7700328,
+   "velocity_layers_max": 4,
+   "pitch_flagged": null,
+   "pitch_measured": null,
+   "octave_suspects": null,
+   "clipped": 1
   }
  ],
  "packs": [
@@ -436,8 +496,32 @@
    "samples": 3450,
    "bytes": 1042394006,
    "source_bytes": 1109894009
+  },
+  {
+   "id": "salamander-grand",
+   "samples": 637,
+   "bytes": 717778864,
+   "source_bytes": 746594157
+  },
+  {
+   "id": "bright-grand",
+   "samples": 222,
+   "bytes": 44049635,
+   "source_bytes": 455943628
+  },
+  {
+   "id": "tubular-bells",
+   "samples": 18,
+   "bytes": 32773030,
+   "source_bytes": 65494450
+  },
+  {
+   "id": "hand-percussion",
+   "samples": 146,
+   "bytes": 7700328,
+   "source_bytes": 37655270
   }
  ],
- "total_bytes": 2431484019,
- "total_source_bytes": 4914695689
+ "total_bytes": 3233785876,
+ "total_source_bytes": 6220383194
 }

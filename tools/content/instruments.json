@@ -693,6 +693,150 @@
           ]
         }
       ]
+    },
+    {
+      "id": "salamander-grand",
+      "library": "salamander-grand",
+      "release": { "tag": "instruments-cc-by-v1" },
+      "instruments": [
+        {
+          "id": "salamander-grand",
+          "cc_defaults": { "72": 0.5 },
+          "qa_notes": [
+            "Key-up release time is the upstream default (release control at 0.5, one second); the release control, velocity-tracking control and sample-start offset are not exposed. Upstream's default velocity tracking (73%) is not applied: KIF velocity.track is 1.0.",
+            "Pedal noise (CC-triggered, silent keys) is omitted; sustain-pedal holding is the sampler's own."
+          ],
+          "name": "Salamander Grand",
+          "category": "piano",
+          "description": "Concert-size grand piano close-miked in an AB pair, sixteen velocity layers in minor thirds, with key-release hammer noise and string resonance. CC BY 3.0.",
+          "parts": [
+            { "sfz": "Salamander Grand Piano V3.sfz", "drop": ["^retuned$"] }
+          ],
+          "articulations": [
+            { "id": "natural", "name": "Natural", "match": "^natural$" }
+          ],
+          "controls": [
+            { "cc": 64, "name": "Sustain pedal", "default": 0 },
+            { "cc": 20, "name": "String resonance", "default": 64 },
+            { "cc": 21, "name": "Hammer noise", "default": 64 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bright-grand",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "bright-grand",
+          "name": "Bright Grand",
+          "category": "piano",
+          "description": "Bright, forward grand piano with key-release samples; sustain pedal follows the pedal controller.",
+          "parts": [
+            {
+              "sfz": "Chordophones/Zithers/Grand Piano, Kawai.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }],
+          "controls": [{ "cc": 64, "name": "Sustain pedal", "default": 0 }]
+        }
+      ]
+    },
+    {
+      "id": "tubular-bells",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "tubular-bells",
+          "name": "Tubular Bells",
+          "category": "mallets",
+          "description": "Orchestral tubular bells (chimes), struck, one octave and a half.",
+          "parts": [
+            {
+              "sfz": "Idiophones/Struck Idiophones/Tubular Bells 1.sfz",
+              "articulation": "normal"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
+    },
+    {
+      "id": "hand-percussion",
+      "library": "vcsl",
+      "instruments": [
+        {
+          "id": "hand-percussion",
+          "name": "Hand Percussion",
+          "category": "percussion",
+          "pitched": false,
+          "description": "Congas, bongos, cajon, frame drum, tambourine, shaker, cabasa, claves, woodblock and cowbells on one keyboard.",
+          "parts": [
+            {
+              "sfz": "Membranophones/Struck Membranophones/Conga.sfz",
+              "articulation": "normal",
+              "key_shift": -24,
+              "label": "Conga"
+            },
+            {
+              "sfz": "Membranophones/Struck Membranophones/Bongos.sfz",
+              "articulation": "normal",
+              "key_shift": -18,
+              "label": "Bongo"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Cajon.sfz",
+              "articulation": "normal",
+              "key_shift": -12,
+              "label": "Cajon"
+            },
+            {
+              "sfz": "Membranophones/Struck Membranophones/Frame Drum.sfz",
+              "articulation": "normal",
+              "key_shift": -9,
+              "label": "Frame drum"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Tambourine 1.sfz",
+              "articulation": "normal",
+              "key_shift": -3,
+              "label": "Tambourine"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Shaker, Large.sfz",
+              "articulation": "normal",
+              "key_shift": 0,
+              "label": "Shaker"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Cabasa.sfz",
+              "articulation": "normal",
+              "key_shift": 3,
+              "label": "Cabasa"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Claves.sfz",
+              "articulation": "normal",
+              "key_shift": 5,
+              "label": "Claves"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Woodblock.sfz",
+              "articulation": "normal",
+              "key_shift": 7,
+              "label": "Woodblock"
+            },
+            {
+              "sfz": "Idiophones/Struck Idiophones/Cowbells.sfz",
+              "articulation": "normal",
+              "key_shift": 10,
+              "label": "Cowbell"
+            }
+          ],
+          "articulations": [{ "id": "normal", "name": "Normal" }]
+        }
+      ]
     }
   ]
 }

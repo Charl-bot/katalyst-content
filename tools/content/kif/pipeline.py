@@ -51,6 +51,22 @@ RELEASE_REPO = "Charl-bot/katalyst-content"
 RELEASE_TAG = "instruments-cc0-v1"
 
 
+def _kif_licence(pp) -> dict:
+    """The KIF licence block. CC0: a courtesy credit. CC BY (D-391): the attribution line, the licence and its URI and
+    a statement of what was changed, because CC BY 3.0 s4(b) asks for all three and the loader refuses a CC BY KIF
+    without a note."""
+    lib = pp.lib
+    if lib["licence_spdx"] == "CC0-1.0":
+        return {"spdx": "CC0-1.0", "verdict": "GREEN", "note": f"{lib['title']} ({lib['publisher']}); courtesy credit in CONTENT_CREDITS"}
+    note = (f"{lib['attribution']} Licensed under {lib['licence_spdx']} ({lib['licence_uri']}). "
+            f"Changes by Katalyst Suite: {lib.get('modifications', MODIFICATIONS)}")
+    return {"spdx": lib["licence_spdx"], "verdict": "GREEN", "note": note}
+
+
+MODIFICATIONS = ("samples converted to FLAC, loudness-normalised and trimmed, and the SFZ mapping converted to KIF; "
+                 "no other change to the recordings.")
+
+
 def release_base(repo: str = RELEASE_REPO, tag: str = RELEASE_TAG) -> str:
     return f"https://github.com/{repo}/releases/download/{tag}"
 
@@ -427,7 +443,7 @@ def assemble(ip, pp, results, uf, group_loudness, group_peak):
     kif.update({
         "pitched": ip.pitched,
         "pack": pp.cfg["id"],
-        "licence": {"spdx": "CC0-1.0", "verdict": "GREEN", "note": f"{pp.lib['title']} ({pp.lib['publisher']}); courtesy credit in CONTENT_CREDITS"},
+        "licence": _kif_licence(pp),
         "audio": {"format": "flac", "sample_rate": rates.most_common(1)[0][0], "channels": max(s["channels"] for s in samples),
                   "bit_depths": sorted({s["bit_depth"] for s in samples})},
         "gain_db": round(gain, 2),
@@ -670,6 +686,14 @@ def verify_pack_parts(parts: List[dict], dist: Path, pdir: Path) -> None:
         raise ProvenanceError(f"packs for {pdir.name} lack {sorted(missing)[:5]}")
 
 
+def _manifest_licence(lib: dict) -> dict:
+    out = {"spdx": lib["licence_spdx"], "verdict": "GREEN"}
+    if lib["licence_spdx"] != "CC0-1.0":
+        out.update({"attribution": lib["attribution"], "uri": lib["licence_uri"],
+                    "modifications": lib.get("modifications", MODIFICATIONS)})
+    return out
+
+
 def cmd_pack(args, libs_cfg, insts):
     import build as cli
 
@@ -679,18 +703,23 @@ def cmd_pack(args, libs_cfg, insts):
     by_id = {p["id"]: p for p in manifest.get("packs", [])}
     rel = insts.get("release", {})
     repo_slug, tag = rel.get("repo", RELEASE_REPO), rel.get("tag", RELEASE_TAG)
-    base = release_base(repo_slug, tag)
+    base = release_base(repo_slug, tag)  # the default release; a pack may name its own
     for pack in cli.selected_packs(insts, args.pack):
+        # D-393: a pack may name its own release (the CC BY packs live in a release whose notes carry the credits).
+        prel = pack.get("release", {})
+        pack_tag = prel.get("tag", tag)
+        pack_base = release_base(prel.get("repo", repo_slug), pack_tag)
         pdir = args.out / pack["id"]
         qa = json.loads((pdir / "qa" / "_pack.json").read_text())
-        parts = write_pack_parts(pdir, args.dist, pack["id"], insts["version"], base)
+        parts = write_pack_parts(pdir, args.dist, pack["id"], insts["version"], pack_base)
         verify_pack_parts(parts, args.dist, pdir)
         lib = libs[pack["library"]]
         entry = {
             "id": pack["id"],
             "version": insts["version"],
             "library": lib["id"],
-            "licence": {"spdx": lib["licence_spdx"], "verdict": "GREEN"},
+            "licence": _manifest_licence(lib),
+            "release_tag": pack_tag,
             "source": {"repo": lib["repo"], "audio_commit": lib["audio_commit"], "mapping_commit": lib["mapping_commit"]},
             "installed_bytes": qa["pack_bytes"] + sum(k.stat().st_size for k in pdir.glob("*.kif.json")),
             "sample_count": qa["sample_count"],
@@ -809,14 +838,16 @@ def cmd_report(args, libs_cfg, insts):
     qa_dir = repo / "docs" / "content" / "qa"
     qa_dir.mkdir(parents=True, exist_ok=True)
     rows = []
-    total_bytes = total_src = 0
     by_lib: Dict[str, dict] = {}
     libs = _libs(libs_cfg)
+    # Incremental (D-392): a pack with no build output here is left as the committed reports have it, so adding a pack
+    # does not need the whole set rebuilt. Its QA page, provenance and summary rows are kept; built packs replace theirs.
+    built = {p["id"] for p in insts["packs"] if (args.out / p["id"] / "qa" / "_pack.json").exists()}
     for pack in insts["packs"]:
+        if pack["id"] not in built:
+            continue
         pdir = args.out / pack["id"]
         pq = json.loads((pdir / "qa" / "_pack.json").read_text())
-        total_bytes += pq["pack_bytes"]
-        total_src += pq["source_bytes"]
         for q in pq["instruments"]:
             kif_doc = json.loads((pdir / f"{q['instrument'].split('.', 1)[1]}.kif.json").read_text())
             q.update(coverage_stats(kif_doc))  # KIF-derived fields, recomputed from the file on disk
@@ -840,6 +871,14 @@ def cmd_report(args, libs_cfg, insts):
         (lic_dst / "LICENSE").write_text((pdir / "LICENSE.upstream.txt").read_text())
     for lid, e in by_lib.items():
         files = e.pop("files")
+        old_prov = repo / "content" / "provenance" / lid / "provenance.json"
+        if old_prov.exists():  # keep the files of this library's packs that were not rebuilt now
+            try:
+                old = json.loads(old_prov.read_text())
+                for f in old.get("files", []):
+                    files.setdefault(f["path"], {k: v for k, v in f.items() if k != "path"})
+            except (ValueError, KeyError):
+                pass
         e["file_count"] = len(files)
         e["source_bytes"] = sum(f["bytes"] for f in files.values())
         # One file per line so reviews diff cleanly.
@@ -849,11 +888,16 @@ def cmd_report(args, libs_cfg, insts):
             lines.append("    " + json.dumps(dict(path=path, **f)) + ("," if i + 1 < len(items) else ""))
         lines += ["  ]", "}"]
         (repo / "content" / "provenance" / lid / "provenance.json").write_text("\n".join(lines) + "\n")
-    S = ["# QA summary: CC0 instrument set v1", "",
-         "Generated by `tools/content/build.py report` from the build's QA JSON. Measurements only; nothing here is a listening judgement.", "",
-         "| Instrument | Pack | Zones (att/rel) | Vel. layers (max) | RR | Pitch >10c / measured | Octave suspects | Clipped samples | FLAC size |",
-         "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
-    summary = {"instruments": [], "packs": []}
+    summary_path = repo / "content" / "instruments" / "qa-summary.json"
+    md_path = repo / "docs" / "content" / "QA_SUMMARY.md"
+    old_sum = json.loads(summary_path.read_text()) if summary_path.exists() else {"instruments": [], "packs": []}
+    lines: Dict[str, tuple] = {}  # slug -> (pack, markdown row), file order
+    if md_path.exists():
+        for ln in md_path.read_text().splitlines():
+            m = re.match(r"^\| \[[^\]]+\]\(qa/([^)]+)\.md\) \| ([^ |]+) \|", ln)
+            if m:
+                lines[m.group(1)] = (m.group(2), ln)
+    inst_recs = {r["instrument"]: r for r in old_sum["instruments"]}
     for pid, q in rows:
         p = q.get("pitch")
         vl = max(v["max"] for v in q["velocity_layers"].values())
@@ -861,21 +905,34 @@ def cmd_report(args, libs_cfg, insts):
         pitch = f"{p['flagged_over_10c']} / {p['measured']}" if p else "n/a"
         octs = str(len(p["octave_suspects"])) if p else "n/a"
         slug = q["instrument"].split(".", 1)[1]
-        S.append(f"| [{q['name']}](qa/{slug}.md) | {pid} | {q['zones']} ({q['attack_zones']}/{q['release_zones']}) | {vl} | {rr} | {pitch} | {octs} | {q['clipping']['samples_with_clip_runs']} | {_mb(q['bytes'])} |")
+        lines[slug] = (pid, f"| [{q['name']}](qa/{slug}.md) | {pid} | {q['zones']} ({q['attack_zones']}/{q['release_zones']}) | {vl} | {rr} | {pitch} | {octs} | {q['clipping']['samples_with_clip_runs']} | {_mb(q['bytes'])} |")
         rec = {k: q[k] for k in ("instrument", "name", "pack", "zones", "attack_zones", "release_zones", "samples", "bytes")}
         rec.update({"velocity_layers_max": vl, "pitch_flagged": p["flagged_over_10c"] if p else None,
                     "pitch_measured": p["measured"] if p else None, "octave_suspects": len(p["octave_suspects"]) if p else None,
                     "clipped": q["clipping"]["samples_with_clip_runs"]})
-        summary["instruments"].append(rec)
+        inst_recs[q["instrument"]] = rec
+    order = {p["id"]: i for i, p in enumerate(insts["packs"])}
+    pack_recs = {r["id"]: r for r in old_sum["packs"]}
+    for pack in insts["packs"]:
+        if pack["id"] in built:
+            pq = json.loads((args.out / pack["id"] / "qa" / "_pack.json").read_text())
+            pack_recs[pack["id"]] = {"id": pack["id"], "samples": pq["sample_count"], "bytes": pq["pack_bytes"], "source_bytes": pq["source_bytes"]}
+    packs_out = [pack_recs[p["id"]] for p in insts["packs"] if p["id"] in pack_recs]
+    total_bytes = sum(p["bytes"] for p in packs_out)
+    total_src = sum(p["source_bytes"] for p in packs_out)
+    S = ["# QA summary: instrument sets", "",
+         "Generated by `tools/content/build.py report` from the build's QA JSON. Measurements only; nothing here is a listening judgement. The CC0 set v1 and the CC BY set (D-391) are listed together; a pack's licence is in `content/instruments/manifest.json`.", "",
+         "| Instrument | Pack | Zones (att/rel) | Vel. layers (max) | RR | Pitch >10c / measured | Octave suspects | Clipped samples | FLAC size |",
+         "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
+    S += [ln for _, (pid, ln) in sorted(lines.items(), key=lambda kv: order.get(kv[1][0], 999))]
     S += ["", "Instrument sizes count every sample the instrument uses; instruments in one pack share samples, so the pack table is the download size.", "",
           "| Pack | Samples | FLAC (download size before gzip) | Source |", "| --- | --- | --- | --- |"]
-    for pack in insts["packs"]:
-        pq = json.loads((args.out / pack["id"] / "qa" / "_pack.json").read_text())
-        S.append(f"| {pack['id']} | {pq['sample_count']} | {_mb(pq['pack_bytes'])} | {_mb(pq['source_bytes'])} |")
-        summary["packs"].append({"id": pack["id"], "samples": pq["sample_count"], "bytes": pq["pack_bytes"], "source_bytes": pq["source_bytes"]})
-    S.append(f"| **Total** | {sum(p['samples'] for p in summary['packs'])} | **{_mb(total_bytes)}** | {_mb(total_src)} |")
-    summary["total_bytes"], summary["total_source_bytes"] = total_bytes, total_src
-    (repo / "docs" / "content" / "QA_SUMMARY.md").write_text("\n".join(S) + "\n")
+    for r in packs_out:
+        S.append(f"| {r['id']} | {r['samples']} | {_mb(r['bytes'])} | {_mb(r['source_bytes'])} |")
+    S.append(f"| **Total** | {sum(p['samples'] for p in packs_out)} | **{_mb(total_bytes)}** | {_mb(total_src)} |")
+    summary = {"instruments": sorted(inst_recs.values(), key=lambda r: order.get(r["pack"], 999)), "packs": packs_out,
+               "total_bytes": total_bytes, "total_source_bytes": total_src}
+    md_path.write_text("\n".join(S) + "\n")
     (repo / "content" / "instruments").mkdir(parents=True, exist_ok=True)
-    (repo / "content" / "instruments" / "qa-summary.json").write_text(json.dumps(summary, indent=1) + "\n")
+    summary_path.write_text(json.dumps(summary, indent=1) + "\n")
     print(f"QA for {len(rows)} instruments; total {_mb(total_bytes)} FLAC from {_mb(total_src)} source")

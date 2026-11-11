@@ -1,8 +1,10 @@
 name: Publish instrument packs
-# Rebuilds the CC0 instrument packs from their pinned upstream commits, checks
-# every archive against content/instruments/manifest.json (bytes + SHA-256),
-# publishes them as release assets, then downloads each one again and re-checks
-# it. A rebuild that doesn't reproduce the committed hashes uploads nothing.
+# Rebuilds the instrument packs (CC0 and, since D-391, CC BY) from their pinned
+# upstream commits, checks every archive against
+# content/instruments/manifest.json (bytes + SHA-256), publishes them as release
+# assets (each pack to the release its manifest entry names, D-393), then
+# downloads each one again and re-checks it. A rebuild that doesn't reproduce the
+# committed hashes uploads nothing.
 on:
   workflow_dispatch:
     inputs:
@@ -10,6 +12,10 @@ on:
         description: "Build and verify only, upload nothing"
         type: boolean
         default: false
+      packs:
+        description: "Pack ids to build and publish, space separated (empty: every pack)"
+        type: string
+        default: ""
 permissions:
   contents: write
 concurrency:
@@ -22,6 +28,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       KATALYST_RELEASE_REPO: ${{ github.repository }}
+      PACKS: ${{ inputs.packs }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -36,6 +43,7 @@ jobs:
           set -o pipefail
           args=(--build)
           [[ "${{ inputs.dry_run }}" == "true" ]] && args+=(--dry-run)
+          for p in $PACKS; do args+=(--pack "$p"); done
           bash scripts/content/publish-instruments.sh "${args[@]}" 2>&1 | tee publish.log
       - name: Surface failure
         if: failure()

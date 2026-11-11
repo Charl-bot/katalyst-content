@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from kif import validate  # noqa: E402
 
 OUT = os.environ.get("KIF_OUT")
+ONLY = set(os.environ.get("KIF_PACKS", "").split())  # a partial build (publish-instruments.sh --pack ...)
 CONFIG = json.loads((Path(__file__).resolve().parent.parent / "instruments.json").read_text())
 
 
@@ -32,6 +33,8 @@ def sha256(p: Path) -> str:
 class BuildOutput(unittest.TestCase):
     def test_every_configured_instrument_was_built(self):
         for pack in CONFIG["packs"]:
+            if ONLY and pack["id"] not in ONLY:
+                continue
             for inst in pack["instruments"]:
                 p = Path(OUT) / pack["id"] / f"{inst['id']}.kif.json"
                 self.assertTrue(p.is_file(), f"missing {p}")

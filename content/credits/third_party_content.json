@@ -1,6 +1,6 @@
 {
   "schema": "katalyst-third-party-content/1",
-  "comment": "In-app Credits for downloadable sound content (licensing report section 6). Every shipped sample must belong to a GREEN record here; tools/content enforces CC0-1.0 only for set v1 (D-193).",
+  "comment": "In-app Credits for downloadable sound content (licensing report section 6). Every shipped sample must belong to a GREEN record here; tools/content accepts CC0-1.0, CC-BY-3.0 and CC-BY-4.0 only (D-193, D-391). A CC BY item carries the attribution line the licence asks for, the licence URL and the modifications made.",
   "items": [
     {
       "id": "vsco2-ce",
@@ -53,14 +53,17 @@
       "used_in": [
         "Concert Grand",
         "Studio Upright",
+        "Bright Grand",
         "Flemish Harpsichord",
         "Pipe Organ",
         "Marimba",
         "Vibraphone",
         "Xylophone",
         "Glockenspiel",
+        "Tubular Bells",
         "Timpani",
-        "Orchestral Percussion"
+        "Orchestral Percussion",
+        "Hand Percussion"
       ],
       "provenance_path": "content/provenance/vcsl/",
       "verdict": "GREEN",
@@ -86,6 +89,29 @@
       "verdict": "GREEN",
       "verified_by": "tools/content build (CC0 LICENSE checked at the pinned commit)",
       "verified_on": "2026-10-28"
+    },
+    {
+      "id": "salamander-grand",
+      "title": "Salamander Grand Piano V3",
+      "author": "Alexander Holm (recording); SFZ remap by kinwie",
+      "licence_spdx": "CC-BY-3.0",
+      "licence_url": "https://creativecommons.org/licenses/by/3.0/",
+      "source_url": "https://archive.org/details/SalamanderGrandPianoV3",
+      "remap_source_url": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+      "source_commit_or_date": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (remap, LICENSE)",
+      "attribution_required": true,
+      "attribution": "\"Salamander Grand Piano V3\" by Alexander Holm (https://archive.org/details/SalamanderGrandPianoV3), SFZ remap by kinwie (https://github.com/sfzinstruments/SalamanderGrandPiano). Licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/). Not endorsed by the author.",
+      "modifications": [
+        "Leading silence trimmed (attack kept)",
+        "Converted to FLAC at the source rate and bit depth",
+        "SFZ mapping converted to KIF v1 with the natural tuning only; loudness-normalised by instrument gain",
+        "Hammer-noise and string-resonance release samples kept; pedal-noise samples left out"
+      ],
+      "used_in": ["Salamander Grand"],
+      "provenance_path": "content/provenance/salamander-grand/",
+      "verdict": "GREEN",
+      "verified_by": "tools/content build (CC BY 3.0 text checked at the pinned commit; attribution and licence URI required by the build)",
+      "verified_on": "2026-11-11"
     }
   ]
 }

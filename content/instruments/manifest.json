@@ -475,6 +475,153 @@
      "members": 3451
     }
    ]
+  },
+  {
+   "id": "salamander-grand",
+   "version": "1.0.0",
+   "library": "salamander-grand",
+   "licence": {
+    "spdx": "CC-BY-3.0",
+    "verdict": "GREEN",
+    "attribution": "\"Salamander Grand Piano V3\" by Alexander Holm (https://archive.org/details/SalamanderGrandPianoV3), SFZ remap by kinwie (https://github.com/sfzinstruments/SalamanderGrandPiano).",
+    "uri": "https://creativecommons.org/licenses/by/3.0/",
+    "modifications": "samples converted to FLAC, loudness-normalised and trimmed; the SFZ mapping converted to KIF with the natural tuning only; hammer-noise and string-resonance release samples kept, pedal noise omitted."
+   },
+   "release_tag": "instruments-cc-by-v1",
+   "source": {
+    "repo": "sfzinstruments/SalamanderGrandPiano",
+    "audio_commit": "3382bf9496bba2486f5ab0de55a264d1dfc38404",
+    "mapping_commit": "3382bf9496bba2486f5ab0de55a264d1dfc38404"
+   },
+   "installed_bytes": 718359020,
+   "sample_count": 637,
+   "instruments": [
+    {
+     "id": "katalyst.salamander-grand",
+     "name": "Salamander Grand",
+     "category": "piano",
+     "kif": "salamander-grand/salamander-grand.kif.json",
+     "kif_sha256": "1657a68044c9aa66b328304755de9b88e94e5991b2c4a49771a9d71fd4c26b05",
+     "kif_bytes": 580156
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-salamander-grand-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc-by-v1/katalyst-salamander-grand-1.0.0.tar.gz",
+     "sha256": "ba37ee034e2a7c21cf801982580f6eba9dedb4ad730bdd397563124281096578",
+     "bytes": 718139823,
+     "members": 638
+    }
+   ]
+  },
+  {
+   "id": "bright-grand",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 44286547,
+   "sample_count": 222,
+   "instruments": [
+    {
+     "id": "katalyst.bright-grand",
+     "name": "Bright Grand",
+     "category": "piano",
+     "kif": "bright-grand/bright-grand.kif.json",
+     "kif_sha256": "c603150551fd235550394f132849df2a0faa4d94321498b74ad1c3270b831265",
+     "kif_bytes": 236912
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-bright-grand-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-bright-grand-1.0.0.tar.gz",
+     "sha256": "87268bf0bac0206fce1e2d50218aa175ef689a6978c21161eec32a5ab17e8b9f",
+     "bytes": 32174754,
+     "members": 223
+    }
+   ]
+  },
+  {
+   "id": "tubular-bells",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 32791542,
+   "sample_count": 18,
+   "instruments": [
+    {
+     "id": "katalyst.tubular-bells",
+     "name": "Tubular Bells",
+     "category": "mallets",
+     "kif": "tubular-bells/tubular-bells.kif.json",
+     "kif_sha256": "382cdb3145de9aab0160021304b74c5ee6ddbc6298eee315ab70cdb1fe104dd7",
+     "kif_bytes": 18512
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-tubular-bells-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-tubular-bells-1.0.0.tar.gz",
+     "sha256": "798eaab9b80df7c238016a79839150ee25830796a441c4ee4d18fb25b87b975d",
+     "bytes": 32791450,
+     "members": 19
+    }
+   ]
+  },
+  {
+   "id": "hand-percussion",
+   "version": "1.0.0",
+   "library": "vcsl",
+   "licence": {
+    "spdx": "CC0-1.0",
+    "verdict": "GREEN"
+   },
+   "release_tag": "instruments-cc0-v1",
+   "source": {
+    "repo": "sgossner/VCSL",
+    "audio_commit": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "mapping_commit": "dfcf4a4918771eee884b96ad4493de82ef84daf6"
+   },
+   "installed_bytes": 7859053,
+   "sample_count": 146,
+   "instruments": [
+    {
+     "id": "katalyst.hand-percussion",
+     "name": "Hand Percussion",
+     "category": "percussion",
+     "kif": "hand-percussion/hand-percussion.kif.json",
+     "kif_sha256": "b9d7692637036a680ffc30d630c6357cdce67d100686f4218739de8f620c26fd",
+     "kif_bytes": 158725
+    }
+   ],
+   "parts": [
+    {
+     "file": "katalyst-hand-percussion-1.0.0.tar.gz",
+     "url": "https://github.com/Charl-bot/katalyst-content/releases/download/instruments-cc0-v1/katalyst-hand-percussion-1.0.0.tar.gz",
+     "sha256": "7de138d9df4acbfe11898a564594cb18a57f4b796788ef2577890c097d6a0f5e",
+     "bytes": 7364832,
+     "members": 147
+    }
+   ]
   }
  ]
 }
