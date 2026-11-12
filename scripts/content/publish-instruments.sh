@@ -133,6 +133,7 @@ for tag in $(printf '%s\n' "${PARTS[@]}" | cut -f5 | sort -u); do
   if ! gh release view "$tag" --repo "$REPO_SLUG" >/dev/null 2>&1; then
     case "$tag" in
       *cc-by*) title="Katalyst instruments (CC BY set, attribution required)" ;;
+      *testing*) title="Katalyst instruments (testing set: permission pending, never in store builds)" ;;
       *) title="Katalyst instruments (CC0 set v1)" ;;
     esac
     gh release create "$tag" --repo "$REPO_SLUG" --prerelease --title "$title" \
