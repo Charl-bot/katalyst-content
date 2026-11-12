@@ -7,6 +7,7 @@ how every region became a zone, and what was dropped or ignored and why.
 from __future__ import annotations
 
 import posixpath
+import math
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -181,6 +182,59 @@ def _release_from_cc(op: Dict[str, str], inst: dict) -> float:
     return extra
 
 
+AMP_CC_RE = re.compile(r"^amplitude_(?:on)?cc(\d+)$")
+VOL_CC_RE = re.compile(r"^(?:volume|gain)_(?:on)?cc(\d+)$")
+PAN_CC_RE = re.compile(r"^pan_(?:on)?cc(\d+)$")
+TUNE_CC_RE = re.compile(r"^(?:tune|pitch)_(?:on)?cc(\d+)$")
+
+
+def frozen_cc_values(parsed, inst: dict) -> Dict[int, float]:
+    """D-424: the CC positions an instrument is frozen at: the program's ``set_ccN`` defaults, then the instrument's
+    ``cc_values`` overrides (0..127). CCs the KIF exposes as controls are not frozen."""
+    vals: Dict[int, float] = {}
+    for k, v in parsed.control.items():
+        m = re.match(r"^set_cc(\d+)$", k)
+        if m:
+            vals[int(m.group(1))] = float(v)
+    for k, v in inst.get("cc_values", {}).items():
+        vals[int(k)] = float(v)
+    for c in inst.get("controls", []):
+        vals.pop(int(c["cc"]), None)
+    return vals
+
+
+def freeze_ccs(op: Dict[str, str], vals: Dict[int, float], exposed: set) -> Optional[Dict[str, float]]:
+    """Bake CC-driven level, pan and tune at the frozen positions (ARIA semantics: amplitude CC targets multiply,
+    volume / pan / tune CC targets add in proportion to the CC). Returns None when a CC condition (loccN / hiccN)
+    on a frozen CC excludes the region at those positions, else the adjustments. Used with ``freeze_cc``."""
+    out = {"gain_db": 0.0, "pan": 0.0, "tune": 0.0}
+    amp = 1.0
+    for k, v in op.items():
+        m = CC_COND_RE.match(k)
+        if m and int(m.group(2)) not in exposed:
+            n = int(m.group(2))
+            x = vals.get(n, 0.0)
+            if (m.group(1) == "lo" and x < float(v)) or (m.group(1) == "hi" and x > float(v)):
+                return None
+            continue
+        for rx, kind in ((AMP_CC_RE, "amp"), (VOL_CC_RE, "vol"), (PAN_CC_RE, "pan"), (TUNE_CC_RE, "tune")):
+            m = rx.match(k)
+            if m and int(m.group(1)) not in exposed:
+                f = vals.get(int(m.group(1)), 0.0) / 127.0
+                if kind == "amp":
+                    amp *= float(v) / 100.0 * f
+                elif kind == "vol":
+                    out["gain_db"] += float(v) * f
+                elif kind == "pan":
+                    out["pan"] += float(v) * f
+                else:
+                    out["tune"] += float(v) * f
+    if amp <= 0.0:
+        return None
+    out["gain_db"] += 20.0 * math.log10(amp)
+    return out
+
+
 def _note(v: Optional[str], default: int) -> int:
     return default if v is None else sfzmod.note_to_midi(v)
 
@@ -231,6 +285,11 @@ def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) ->
                 # and one mic's mapping (so its perc / epic includes are never read).
                 virt = "Programs/__katalyst_%s.sfz" % part["mic"]
                 text_root = defines_prefix + '#include "%s"\n' % posixpath.relpath(root, "Programs")
+            elif part.get("prelude"):
+                # D-424: text the player (ARIA) would supply, e.g. "<control> default_path=../Samples/" where a
+                # program leaves $sample_dir to the GUI bank. A synthetic root next to the program prepends it.
+                virt = posixpath.join(posixpath.dirname(root), "__katalyst_" + posixpath.basename(root))
+                text_root = part["prelude"] + '\n#include "%s"\n' % posixpath.basename(root)
             else:
                 virt, text_root = root, None
 
@@ -244,8 +303,20 @@ def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) ->
             ip.sfz_files.append(root)
             ip.sfz_files.extend(p for p in parsed.includes if p not in ip.sfz_files)
             labelled_keys = set()
+            freeze = bool(inst.get("freeze_cc"))
+            exposed = {int(c["cc"]) for c in inst.get("controls", [])}
+            cc_vals = frozen_cc_values(parsed, inst) if freeze else {}
             for region in parsed.regions:
                 op = region.opcodes
+                adj = None
+                if freeze:
+                    adj = freeze_ccs(op, cc_vals, exposed)
+                    if adj is None:
+                        ip.skipped["region silent at the frozen CC positions (freeze_cc)"] += 1
+                        continue
+                    op = {k: v for k, v in op.items()
+                          if not (any(rx.match(k) for rx in (AMP_CC_RE, VOL_CC_RE, PAN_CC_RE, TUNE_CC_RE))
+                                  or (CC_COND_RE.match(k) and int(CC_COND_RE.match(k).group(2)) not in exposed))}
                 for k in op:
                     m = CC_COND_RE.match(k)
                     baked = REL_ONCC_RE.match(k) and REL_ONCC_RE.match(k).group(1) in inst.get("cc_defaults", {})
@@ -359,7 +430,9 @@ def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) ->
                     instrument=inst["id"], key_lo=lo, key_hi=hi, root=center if pitched else None,
                     vel_lo=max(1, int(op.get("lovel", "1"))), vel_hi=int(op.get("hivel", "127")),
                     articulation=art, trigger=trigger, layers=[(entry_a.path, part.get("mic", "main"))],
-                    tune_cents=_f(op.get("tune")), gain_db=_f(op.get("volume")), pan=_f(op.get("pan")) / 100.0,
+                    tune_cents=_f(op.get("tune")) + (adj["tune"] if adj else 0.0),
+                    gain_db=_f(op.get("volume")) + (adj["gain_db"] if adj else 0.0),
+                    pan=max(-1.0, min(1.0, (_f(op.get("pan")) + (adj["pan"] if adj else 0.0)) / 100.0)),
                     amp_veltrack=(_f(op["amp_veltrack"]) / 100.0) if "amp_veltrack" in op else None,
                     offset=int(_f(op.get("offset"))), rr=rr, cc=cc, vel_xfade=xf,
                     loop_mode=lm, loop_start=int(op["loop_start"]) if "loop_start" in op else None,

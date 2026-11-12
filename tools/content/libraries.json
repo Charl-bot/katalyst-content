@@ -111,6 +111,222 @@
       "modifications": "samples converted to FLAC, loudness-normalised and trimmed; the SFZ mappings converted to KIF; instrument names changed to descriptive, brand-free names.",
       "exclude": [],
       "allow": []
+    },
+    {
+      "id": "karoryfer-growlybass",
+      "title": "Growlybass",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.growlybass",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.growlybass",
+      "audio_commit": "4f483268fc66b5a6d5781d421c0d11b8d08d3fc6",
+      "audio_ref": "master",
+      "mapping_commit": "4f483268fc66b5a6d5781d421c0d11b8d08d3fc6",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-shinyguitar",
+      "title": "Shinyguitar",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.shinyguitar",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.shinyguitar",
+      "audio_commit": "57243cca85277dbcc120ce17c6178032f93c80f3",
+      "audio_ref": "master",
+      "mapping_commit": "57243cca85277dbcc120ce17c6178032f93c80f3",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-emilyguitar",
+      "title": "Emilyguitar",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.emilyguitar",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.emilyguitar",
+      "audio_commit": "b4920dc662fd9cad6dcaccdeecffdd91c8725d8c",
+      "audio_ref": "master",
+      "mapping_commit": "b4920dc662fd9cad6dcaccdeecffdd91c8725d8c",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-black-and-green-guitars",
+      "title": "Black And Green Guitars",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.black-and-green-guitars",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.black-and-green-guitars",
+      "audio_commit": "b3b3249d37dc977a1a297bd2dc053e6d9b6b805c",
+      "audio_ref": "master",
+      "mapping_commit": "b3b3249d37dc977a1a297bd2dc053e6d9b6b805c",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-black-and-blue-basses",
+      "title": "Black And Blue Basses",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.black-and-blue-basses",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.black-and-blue-basses",
+      "audio_commit": "6e7d674cdb41be7a54dbccb15472401ad01099b9",
+      "audio_ref": "master",
+      "mapping_commit": "6e7d674cdb41be7a54dbccb15472401ad01099b9",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "license",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-big-rusty-drums",
+      "title": "Big Rusty Drums",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.big-rusty-drums",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.big-rusty-drums",
+      "audio_commit": "f07ce00df34a46b6b08375be56fe116cf15782bc",
+      "audio_ref": "master",
+      "mapping_commit": "f07ce00df34a46b6b08375be56fe116cf15782bc",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-swirly-drums",
+      "title": "Swirly Drums",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.swirly-drums",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.swirly-drums",
+      "audio_commit": "c40dafe0011cb2e54c0c220ff0fa308a11fc60f5",
+      "audio_ref": "master",
+      "mapping_commit": "c40dafe0011cb2e54c0c220ff0fa308a11fc60f5",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "license",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-weresax",
+      "title": "Weresax",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.weresax",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.weresax",
+      "audio_commit": "a4d756b21d2a573aca0d840cce7e71ba5effd4c6",
+      "audio_ref": "master",
+      "mapping_commit": "a4d756b21d2a573aca0d840cce7e71ba5effd4c6",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
+    },
+    {
+      "id": "karoryfer-bear-sax",
+      "title": "Bear Sax",
+      "publisher": "Karoryfer Samples (D. Smolken)",
+      "repo": "sfzinstruments/karoryfer.bear-sax",
+      "source_url": "https://github.com/sfzinstruments/karoryfer.bear-sax",
+      "audio_commit": "7abb3c652525a15dfac80e1b5dfbba9964ee568f",
+      "audio_ref": "master",
+      "mapping_commit": "7abb3c652525a15dfac80e1b5dfbba9964ee568f",
+      "mapping_ref": "master",
+      "licence_spdx": "CC0-1.0",
+      "licence_file": "LICENSE",
+      "permission": {
+        "status": "pending",
+        "why": "The repository carries the CC0 1.0 text but the readme says 'royalty-free, copyright Karoryfer'; testing only until Karoryfer confirms in writing (D-402, D-424)."
+      },
+      "exclude": [],
+      "allow": [
+        {
+          "pattern": "(?i)karoryfer",
+          "reason": "Karoryfer library, testing only until permission (D-424)"
+        }
+      ]
     }
   ]
 }

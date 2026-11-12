@@ -113,6 +113,27 @@ def quantise_to(pcm: np.ndarray, bits: int) -> np.ndarray:
     return ((pcm.astype(np.int64) >> shift) << shift).astype(np.int32)
 
 
+def dither_to(pcm: np.ndarray, bits: int, seed: int) -> np.ndarray:
+    """Requantise a left-justified int32 to ``bits`` with TPDF dither (±1 LSB triangular).
+
+    Deterministic for a given seed, so a rebuild reproduces the published hashes.
+    Samples already at or below ``bits`` pass through unchanged (no added noise).
+    Digital silence stays silent: dither is gated off where the source is exactly 0,
+    so trimmed fades and padded tails do not gain a noise floor.
+    """
+    shift = 32 - bits
+    x = pcm.astype(np.int64)
+    if not np.any(x & ((1 << shift) - 1)):
+        return pcm.copy()
+    rng = np.random.default_rng(seed)
+    lsb = float(1 << shift)
+    d = (rng.random(x.shape) - rng.random(x.shape)) * lsb
+    y = np.floor((x.astype(np.float64) + d) / lsb + 0.5)
+    y[x == 0] = 0.0
+    lo, hi = -(1 << (bits - 1)), (1 << (bits - 1)) - 1
+    return (np.clip(y, lo, hi).astype(np.int64) << shift).astype(np.int32)
+
+
 def clip_runs(x: np.ndarray, bits: int) -> int:
     """Number of runs of >= CLIP_RUN frames within 1 LSB of full scale."""
     lsb = 1 << (32 - bits)

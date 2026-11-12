@@ -147,7 +147,13 @@ class SyntheticUpstream(unittest.TestCase):
         src = sf.read(self.tmp / "upstream" / "Samples" / "tone_C4_v2_rr1.wav", dtype="int32")[0]
         out = sf.read(self.pdir / s["file"], dtype="int32")[0]
         cut = s["trimmed_frames"]
-        np.testing.assert_array_equal(out[64:], src[cut + 64 :])
+        # D-422: a 24-bit source ships at 16 bits with TPDF dither, so after the trim point each frame is the
+        # source within 1 LSB at 16 bits (dither spans +-1 LSB, rounding adds half), and the low 16 bits are zero.
+        self.assertEqual(s["bit_depth"], 16)
+        self.assertFalse(np.any(out.astype(np.int64) & 0xFFFF))
+        err = np.abs(out[64:].astype(np.int64) - src[cut + 64 :].astype(np.int64))
+        self.assertLessEqual(int(err.max()), int(1.5 * 65536))
+        self.assertIn("16-bit with TPDF dither", " ".join(self.kif["provenance"]["modifications"]))
 
     def test_pitch_flags_the_sharp_sample_only(self):
         p = self.qa["pitch"]
@@ -265,3 +271,89 @@ class SyntheticUpstream(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MultiMicMixdown(unittest.TestCase):
+    """D-423: a "mixdown" pack ships one stereo file per hit, mixed at the default mic preset, with muted mics left
+    out and a zone gain that restores each file's level, so the instrument sounds as the multi-mic default did."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = Path(tempfile.mkdtemp())
+        repo = cls.tmp / "upstream"
+        for mic in ("close", "room", "lofi"):
+            (repo / "Samples" / mic / "snare").mkdir(parents=True)
+            for v, amp in ((1, 0.1), (2, 0.6)):
+                write_tone(repo / f"Samples/{mic}/snare/{mic}_snare_v{v}.wav", 50, amp=amp * (0.5 if mic == "room" else 1.0))
+            (repo / f"{mic}.sfz").write_text(
+                f"<region> sample=Samples/{mic}/snare/{mic}_snare_v1.wav key=38 lovel=1 hivel=63\n"
+                f"<region> sample=Samples/{mic}/snare/{mic}_snare_v2.wav key=38 lovel=64 hivel=127\n")
+        shutil.copy(HERE / "fixtures" / "CC0-1.0.txt", repo / "LICENSE")
+        git(repo, "init", "-q")
+        git(repo, "-c", "user.email=t@t", "-c", "user.name=t", "add", ".")
+        git(repo, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "fixture")
+        commit = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+        lib = {"id": "kit", "title": "Kit", "publisher": "Test", "repo": "test/kit", "fetch": "git", "audio_commit": commit,
+               "mapping_commit": commit, "licence_spdx": "CC0-1.0", "licence_file": "LICENSE", "exclude": [], "allow": []}
+        gex = json.loads((HERE.parent / "libraries.json").read_text())["global_exclude"]
+        inst = {"id": "kit", "name": "Kit", "category": "drums", "pitched": False, "multi_mic": True, "merge_reference_mic": "close",
+                "parts": [{"sfz": f"{m}.sfz", "mic": m} for m in ("close", "room", "lofi")],
+                "mics": [{"id": m, "name": m} for m in ("close", "room", "lofi")], "articulations": [{"id": "normal", "name": "Normal"}],
+                "mic_presets": [{"id": "full", "name": "Full", "default": True, "gains_db": {"close": 0, "room": -6, "lofi": None}}]}
+        cls.multi = cls._build(cls, lib, gex, {"id": "kit", "library": "kit", "instruments": [inst]}, "multi")
+        cls.mixed = cls._build(cls, lib, gex, {"id": "kit", "library": "kit", "mixdown": True, "instruments": [inst]}, "mixed")
+
+    def _build(self, lib, gex, pack, name):
+        up = Upstream(lib, self.tmp / "upstream", self.tmp / f"raw-{name}")
+        pp = plan.plan_pack(pack, lib, gex, up)
+        pipeline.build_pack(pp, self.tmp / name, log=lambda *_: None, workers=1)
+        d = self.tmp / name / "kit"
+        return d, json.loads((d / "kit.kif.json").read_text())
+
+    def test_one_stereo_file_per_hit_and_one_mic(self):
+        d, kif = self.mixed
+        self.assertEqual([m["id"] for m in kif["mics"]], ["main"])
+        self.assertEqual(len(kif["samples"]), 2)
+        self.assertTrue(all(len(z["layers"]) == 1 and z["layers"][0]["mic"] == "main" for z in kif["zones"]))
+        self.assertEqual(validate.validate_dir(d, check_files=True), [])
+        self.assertLess(sum(s["bytes"] for s in kif["samples"]), sum(s["bytes"] for s in self.multi[1]["samples"]) / 2)
+
+    def test_mix_matches_the_default_preset(self):
+        """Played back (file x zone gain x instrument gain) the mix equals close + room at -6 dB, lofi muted."""
+        (dm, km), (dx, kx) = self.multi, self.mixed
+        self.assertAlmostEqual(km["gain_db"], kx["gain_db"], delta=0.01)
+        for vel in (1, 64):
+            zx = next(z for z in kx["zones"] if z["vel_lo"] == vel)
+            out = sf.read(dx / f"samples/{zx['layers'][0]['sample']}.flac")[0] * 10 ** (zx.get("gain_db", 0) / 20)
+            zm = next(z for z in km["zones"] if z["vel_lo"] == vel)
+            ref = 0
+            for layer in zm["layers"]:
+                g = {"close": 0, "room": -6}.get(layer["mic"])
+                if g is None:
+                    continue
+                x = sf.read(dm / f"samples/{layer['sample']}.flac")[0]
+                ref = ref + x * 10 ** ((g + zm.get("gain_db", 0)) / 20)
+            n = min(len(out), len(ref))
+            err = np.max(np.abs(out[:n] - ref[:n]))
+            self.assertLess(err, 2 * 2 ** -15 * 10 ** (zx.get("gain_db", 0) / 20) + 1e-4, f"vel {vel}")
+            self.assertGreater(np.max(np.abs(out)), 0.05)
+
+
+class FreezeCc(unittest.TestCase):
+    """D-424: CC-driven mic faders, pans and CC conditions are baked at the program's set_cc positions."""
+
+    def test_amplitude_multiplies_and_volume_adds(self):
+        adj = plan.freeze_ccs({"amplitude_cc100": "70", "volume_oncc7": "-6"}, {100: 40.0, 7: 127.0}, set())
+        self.assertAlmostEqual(adj["gain_db"], 20 * math.log10(0.7 * 40 / 127) - 6.0, places=6)
+
+    def test_condition_outside_the_frozen_value_drops_the_region(self):
+        self.assertIsNone(plan.freeze_ccs({"locc100": "1"}, {100: 0.0}, set()))
+        self.assertIsNotNone(plan.freeze_ccs({"locc100": "1"}, {100: 40.0}, set()))
+        self.assertIsNone(plan.freeze_ccs({"hicc100": "126"}, {100: 127.0}, set()))
+
+    def test_exposed_controls_are_not_frozen(self):
+        adj = plan.freeze_ccs({"locc64": "64", "amplitude_cc64": "50"}, {}, {64})
+        self.assertEqual(adj["gain_db"], 0.0)
+
+    def test_zero_amplitude_is_silent(self):
+        self.assertIsNone(plan.freeze_ccs({"amplitude_oncc100": "100"}, {100: 0.0}, set()))

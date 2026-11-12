@@ -37,7 +37,11 @@ from . import audio
 from . import plan as planmod
 from .upstream import ProvenanceError, Upstream, sha256_file
 
-CONVERTER = "katalyst-kif-convert 1.0.0"
+CONVERTER = "katalyst-kif-convert 1.1.0"
+# Distribution bit depth (D-422). 24-bit sources ship as 16-bit with TPDF dither: the recordings' own noise floor
+# (measured about -88 dBFS on VCSL) sits well above 16-bit dither (-101 dBFS), and packs shrink to about 43%.
+# A pack keeps its source depth with "dist_bits": 24 in instruments.json.
+DIST_BITS = 16
 TARGET_LUFS = -18.0  # max momentary loudness of a top-velocity single note
 PEAK_CEILING_DBFS = -1.0
 PITCH_FLAG_CENTS = 10.0
@@ -63,7 +67,7 @@ def _kif_licence(pp) -> dict:
     return {"spdx": lib["licence_spdx"], "verdict": "GREEN", "note": note}
 
 
-MODIFICATIONS = ("samples converted to FLAC, loudness-normalised and trimmed, and the SFZ mapping converted to KIF; "
+MODIFICATIONS = ("samples converted to FLAC (24-bit sources requantised to 16-bit with dither), loudness-normalised and trimmed, and the SFZ mapping converted to KIF; "
                  "no other change to the recordings.")
 
 
@@ -119,6 +123,8 @@ class SampleOut:
     channels: int = 0
     sample_rate: int = 0
     bits: int = 0
+    src_bits: int = 0
+    mix_undo_db: Optional[float] = None  # D-423: set on a mixed-down multi-mic file
     cut: int = 0
     peak_dbfs: float = -200.0
     tail_rms_dbfs: float = -200.0
@@ -153,6 +159,11 @@ def _db(x: float) -> float:
 # -- build ---------------------------------------------------------------------
 def build_pack(pp: planmod.PackPlan, out_root: Path, keep_raw: bool = False, workers: int = 3, log=print) -> dict:
     pack_id = pp.cfg["id"]
+    dist_bits = int(pp.cfg.get("dist_bits", DIST_BITS))
+    # D-423: "mixdown": true ships each multi-mic hit as one stereo file mixed at the default mic preset (muted mics
+    # left out), instead of one file per mic. The KIF then has a single "main" mic; each zone's gain undoes the
+    # per-file scaling, so velocity layers keep their recorded relation.
+    mixdown = bool(pp.cfg.get("mixdown"))
     up: Upstream = pp.upstream
     pdir = out_root / pack_id
     sdir = pdir / "samples"
@@ -226,15 +237,34 @@ def build_pack(pp: planmod.PackPlan, out_root: Path, keep_raw: bool = False, wor
         onset, _ = audio.onset_frame(mags)
         mix = None
         for src, path, pcm, so in loaded:
+            if mixdown and len(loaded) > 1:
+                so.cut, so.sample_rate, so.bits, so.src_bits = cut, pcm.sample_rate, min(pcm.bits, dist_bits), pcm.bits
+                fl = audio.apply_trim(pcm.data, cut).astype(np.float64) / 2147483648.0
+                g = mic_gain.get(mic_of.get(src, "main"), 0.0) if mic_gain else 0.0
+                if g is not None:
+                    st = fl if fl.shape[1] == 2 else np.repeat(fl, 2, axis=1)
+                    st = st * 10 ** (g / 20)
+                    if mix is None:
+                        mix = st
+                    else:
+                        n = max(mix.shape[0], st.shape[0])
+                        mix = np.pad(mix, ((0, n - mix.shape[0]), (0, 0))) + np.pad(st, ((0, n - st.shape[0]), (0, 0)))
+                if not keep_raw:
+                    up.drop(pp.sources[src])
+                continue
+            bits = min(pcm.bits, dist_bits)
             data = audio.quantise_to(audio.apply_trim(pcm.data, cut), pcm.bits)
+            if bits < pcm.bits:
+                data = audio.dither_to(data, bits, int(so.src_sha256[:16], 16))
             dest = sdir / f"{so.name}.flac"
-            audio.write_flac(str(dest), data, pcm.sample_rate, pcm.bits)
+            audio.write_flac(str(dest), data, pcm.sample_rate, bits)
             so.sha256 = sha256_file(dest)
             so.bytes = dest.stat().st_size
             so.frames, so.channels = int(data.shape[0]), int(data.shape[1])
-            so.sample_rate, so.bits, so.cut = pcm.sample_rate, pcm.bits, cut
+            so.sample_rate, so.bits, so.cut = pcm.sample_rate, bits, cut
+            so.src_bits = pcm.bits
             so.peak_dbfs = audio.peak_dbfs(data)
-            so.clip_runs = audio.clip_runs(data, pcm.bits)
+            so.clip_runs = audio.clip_runs(data, bits)
             fl = data.astype(np.float64) / 2147483648.0
             tail = fl[-int(0.1 * sr) :]
             so.tail_rms_dbfs = 10 * math.log10(float(np.mean(tail * tail)) + 1e-30)
@@ -257,9 +287,33 @@ def build_pack(pp: planmod.PackPlan, out_root: Path, keep_raw: bool = False, wor
             if not keep_raw:
                 up.drop(pp.sources[src])
         key = uf.find(group[0])
+        mixed = None
+        if mixdown and len(loaded) > 1 and mix is not None:
+            peak = float(np.max(np.abs(mix)))
+            scale = 10 ** (PEAK_CEILING_DBFS / 20) / peak if peak > 0 else 1.0
+            first = loaded[0][3]
+            mixed = SampleOut(source=first.source, name=f"{first.name}_mix", blob=first.blob)
+            mixed.src_sha256, mixed.src_bytes, mixed.src_format = first.src_sha256, first.src_bytes, first.src_format
+            mixed.smpl_loops = []
+            ints = np.round(np.clip(mix * scale, -1.0, 1.0 - 2 ** -31) * 2147483648.0).astype(np.int64)
+            ints = np.clip(ints, -(2 ** 31), 2 ** 31 - 1).astype(np.int32)
+            bits = min(first.src_bits, dist_bits)
+            data = audio.dither_to(audio.quantise_to(ints, 24), bits, int(first.src_sha256[:16], 16))
+            dest = sdir / f"{mixed.name}.flac"
+            audio.write_flac(str(dest), data, sr, bits)
+            mixed.sha256, mixed.bytes = sha256_file(dest), dest.stat().st_size
+            mixed.frames, mixed.channels = int(data.shape[0]), int(data.shape[1])
+            mixed.sample_rate, mixed.bits, mixed.src_bits, mixed.cut = sr, bits, first.src_bits, cut
+            mixed.peak_dbfs = audio.peak_dbfs(data)
+            mixed.clip_runs = audio.clip_runs(data, bits)
+            fl = data.astype(np.float64) / 2147483648.0
+            tail = fl[-int(0.1 * sr) :]
+            mixed.tail_rms_dbfs = 10 * math.log10(float(np.mean(tail * tail)) + 1e-30)
+            mixed.loudness = audio.max_momentary_lufs(fl, sr)
+            mixed.mix_undo_db = -_db(scale)
         with lock:
             for src, _, _, so in loaded:
-                results[src] = so
+                results[src] = mixed if mixed is not None else so
             if mix is not None:
                 group_loudness[key] = audio.max_momentary_lufs(mix, sr)
                 group_peak[key] = _db(float(np.max(np.abs(mix))))
@@ -281,7 +335,7 @@ def build_pack(pp: planmod.PackPlan, out_root: Path, keep_raw: bool = False, wor
         "files": [
             {"path": s.source, "commit": up.audio_commit, "git_blob": s.blob, "sha256": s.src_sha256, "bytes": s.src_bytes,
              "output": f"samples/{s.name}.flac", "output_sha256": s.sha256}
-            for s in sorted(results.values(), key=lambda r: r.source)
+            for s in sorted({id(r): r for r in results.values()}.values(), key=lambda r: r.source)
         ],
     }
     (pdir / "provenance.json").write_text(json.dumps(prov, indent=1) + "\n")
@@ -293,8 +347,9 @@ def build_pack(pp: planmod.PackPlan, out_root: Path, keep_raw: bool = False, wor
         (pdir / f"{ip.id}.kif.json").write_text(json.dumps(kif, indent=1) + "\n")
         (pdir / "qa" / f"{ip.id}.json").write_text(json.dumps(qa, indent=1) + "\n")
         summary["instruments"].append(qa)
-    summary["pack_bytes"] = sum(s.bytes for s in results.values())
-    summary["sample_count"] = len(results)
+    uniq = list({id(r): r for r in results.values()}.values())
+    summary["pack_bytes"] = sum(s.bytes for s in uniq)
+    summary["sample_count"] = len(uniq)
     summary["source_bytes"] = sum(s.src_bytes for s in results.values())
     (pdir / "qa" / "_pack.json").write_text(json.dumps(summary, indent=1) + "\n")
     return summary
@@ -380,9 +435,18 @@ def assemble(ip, pp, results, uf, group_loudness, group_peak):
                 zo["choke_time"] = z.off_time
         if z.envelope != default_env:
             zo["envelope"] = z.envelope
-        zo["layers"] = [{"sample": results[s].name, "mic": m} for s, m in z.layers]
-        for s, _ in z.layers:
-            used_samples[s] = results[s]
+        so_m = results[z.layers[0][0]]
+        if so_m.mix_undo_db is not None:
+            g = round(z.gain_db + so_m.mix_undo_db, 4)
+            zo.pop("gain_db", None)
+            if g:
+                zo["gain_db"] = g
+            zo["layers"] = [{"sample": so_m.name, "mic": "main"}]
+            used_samples[so_m.name] = so_m
+        else:
+            zo["layers"] = [{"sample": results[s].name, "mic": m} for s, m in z.layers]
+            for s, _ in z.layers:
+                used_samples[s] = results[s]
         kz.append(zo)
     if offset_clamped:
         notes.append(f"{offset_clamped} zone(s): upstream start offset fell inside the trimmed lead-in; playback starts at the trim point")
@@ -429,8 +493,9 @@ def assemble(ip, pp, results, uf, group_loudness, group_peak):
         }
         samples.append(e)
     rates = Counter(s["sample_rate"] for s in samples)
-    mics = inst.get("mics") or [{"id": "main", "name": "Stereo" if max(s["channels"] for s in samples) == 2 else "Mono"}]
-    presets = inst.get("mic_presets") or [{"id": "default", "name": "Default", "default": True, "gains_db": {m["id"]: 0 for m in mics}}]
+    mixed_kit = any(so.mix_undo_db is not None for so in used_samples.values())
+    mics = (None if mixed_kit else inst.get("mics")) or [{"id": "main", "name": "Stereo" if max(s["channels"] for s in samples) == 2 else "Mono"}]
+    presets = (None if mixed_kit else inst.get("mic_presets")) or [{"id": "default", "name": "Default", "default": True, "gains_db": {m["id"]: 0 for m in mics}}]
     kif = {
         "kif": 1,
         "id": f"katalyst.{inst['id']}",
@@ -471,7 +536,9 @@ def assemble(ip, pp, results, uf, group_loudness, group_peak):
         "sfz": ip.sfz_files, "converter": CONVERTER,
         "modifications": [
             "Leading silence trimmed (onset at -50 dB re. peak, 3 ms pre-roll kept, 32-frame fade-in on trimmed samples)",
-            "Converted from WAV/FLAC to FLAC at the source bit depth and sample rate",
+            ("Converted from WAV/FLAC to FLAC at the source sample rate; 24-bit sources requantised to 16-bit with TPDF dither"
+             if any(results[l[0]].src_bits > results[l[0]].bits for z in ip.zones for l in z.layers if l[0] in results)
+             else "Converted from WAV/FLAC to FLAC at the source bit depth and sample rate"),
             "SFZ mapping converted to KIF v1; instrument gain set by loudness normalisation (PCM not gain-changed)",
         ],
     }
@@ -709,6 +776,8 @@ def cmd_pack(args, libs_cfg, insts):
         prel = pack.get("release", {})
         pack_tag = prel.get("tag", tag)
         pack_base = release_base(prel.get("repo", repo_slug), pack_tag)
+        if libs[pack["library"]].get("permission", {}).get("status") == "pending" and "testing" not in pack_tag:
+            raise ProvenanceError(f"{pack['id']}: permission pending (D-424); it may only go to a testing release, not {pack_tag}")
         pdir = args.out / pack["id"]
         qa = json.loads((pdir / "qa" / "_pack.json").read_text())
         parts = write_pack_parts(pdir, args.dist, pack["id"], insts["version"], pack_base)
@@ -720,6 +789,7 @@ def cmd_pack(args, libs_cfg, insts):
             "library": lib["id"],
             "licence": _manifest_licence(lib),
             "release_tag": pack_tag,
+            **({"status": "testing"} if lib.get("permission", {}).get("status") == "pending" else {}),
             "source": {"repo": lib["repo"], "audio_commit": lib["audio_commit"], "mapping_commit": lib["mapping_commit"]},
             "installed_bytes": qa["pack_bytes"] + sum(k.stat().st_size for k in pdir.glob("*.kif.json")),
             "sample_count": qa["sample_count"],

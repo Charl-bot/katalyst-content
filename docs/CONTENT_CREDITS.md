@@ -74,6 +74,14 @@ Per-file provenance: `content/provenance/<library>/provenance.json` records the 
 - **What this does not mean:** the author and the sfzinstruments project do not endorse Katalyst Suite or this adaptation.
 - **Technical measures:** as for the Salamander Grand above: a plain `.tar.gz` of FLAC and JSON, no lock.
 
+## Karoryfer Samples (testing builds only, permission pending)
+
+- **By:** Karoryfer Samples (D. Smolken: recorded, edited and mapped), published in the `sfzinstruments` project.
+- **Licence:** each repository carries the CC0 1.0 Universal text at the pinned commit; the readmes also say "royalty-free for all commercial and non-commercial use, copyright Karoryfer". Katalyst asks Karoryfer to confirm before any store release (D-402, D-424), so these packs are in testing builds only (release `instruments-testing-v1`) and a store build never lists them.
+- **Sources (pinned commits in `tools/content/libraries.json`):** Growlybass, Shinyguitar, Emilyguitar, Black And Blue Basses, Black And Green Guitars, Weresax, Bear Sax, Big Rusty Drums, Swirly Drums, all at <https://github.com/sfzinstruments>.
+- **Used in:** Jazz Bass (Fingered), Precision Bass, Archtop Guitar (Acoustic and Pickup), Electric Guitar (Clean), Electric Guitar (Twang), Alto Sax, Baritone Sax, Rock Kit (Big Rusty), Indie Kit (Swirly).
+- **Changes we made:** as below, and the players' controls (mic faders, blends, vibrato, unison) are fixed at the programs' default positions (D-424).
+
 ## Verified but not built: DrumGizmo kits
 
 Both kits are CC BY 4.0 and were checked on their project pages (11 Nov 2026): the **DRSKit** (13 microphones; the DrumGizmo team with Jes Eiler of DRSDrums) and the **MuldjordKit** (Lars Muldjord, 15 microphones). They are published in the DrumGizmo XML format, not SFZ, so they need a converter before they can become KIF packs (KI-1306). The MuldjordKit asks that credits or liner notes say "Drum samples provided by DrumGizmo.org". If either kit is ever shipped, that line goes in this file, the Credits screen and the release notes. Nothing from them is in a build.
@@ -83,6 +91,7 @@ Both kits are CC BY 4.0 and were checked on their project pages (11 Nov 2026): t
 The same changes apply to every library:
 
 - Leading silence was trimmed. The cut is 3 ms before the first sample at -50 dB relative to the sample's peak, so the attack is kept, and a 32-frame fade-in is applied.
-- Files were converted to FLAC at the original sample rate and bit depth.
+- Files were converted to FLAC at the original sample rate; 24-bit recordings are stored at 16 bits with dither (D-422), which adds noise far below the recordings' own.
+- The Jazz Club Kit's six microphones are stored as one stereo mix at its default mic balance (D-423).
 - The SFZ mappings were converted to the Katalyst Instrument Format (KIF v1). Instrument gain was set by loudness normalisation. The audio itself is not gain-changed.
 - Some SFZ features are not carried over. The QA report of each instrument lists them (`docs/content/qa/`).

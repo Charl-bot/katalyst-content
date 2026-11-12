@@ -186,7 +186,9 @@ def parse(
     for kind, payload, origin in tokens:
         if kind == "header":
             flush_region()
-            in_curve = payload == "curve"
+            # <curve> tables and <effect> buses (D-424: reverb / EQ sends in the Karoryfer kits) define no regions;
+            # their opcodes are skipped. The KIF plays the dry regions; room sound is the host's job.
+            in_curve = payload in ("curve", "effect")
             if in_curve:
                 current = None
                 continue

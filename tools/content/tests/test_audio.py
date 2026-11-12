@@ -153,3 +153,34 @@ class ClipAndIoTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DitherTests(unittest.TestCase):
+    """D-422: 24-bit sources ship as 16-bit with TPDF dither."""
+
+    def test_deterministic_and_16_bit(self):
+        x = audio.quantise_to(to_int(tone(440.0, 0.5, amp=0.3)), 24)
+        a = audio.dither_to(x, 16, 7)
+        b = audio.dither_to(x, 16, 7)
+        np.testing.assert_array_equal(a, b)
+        self.assertFalse(np.any(a.astype(np.int64) & 0xFFFF), "low 16 bits must be zero")
+
+    def test_error_is_small_and_unbiased(self):
+        x = audio.quantise_to(to_int(tone(440.0, 1.0, amp=0.3)), 24)
+        y = audio.dither_to(x, 16, 1)
+        e = (y.astype(np.float64) - x.astype(np.float64)) / 2147483648.0
+        rms_db = 20 * math.log10(float(np.sqrt(np.mean(e * e))))
+        # TPDF over a 16-bit step: error RMS = sqrt(1/12 + 2/12) = 0.5 LSB = -96.3 dBFS
+        self.assertLess(rms_db, -95.0)
+        self.assertGreater(rms_db, -100.0)
+        self.assertLess(abs(float(np.mean(e))), 1e-6)
+
+    def test_silence_stays_silent(self):
+        x = np.zeros((4800, 2), dtype=np.int32)
+        x[100:200] = audio.quantise_to(to_int(tone(440.0, 100 / FS, amp=0.1)), 24)
+        y = audio.dither_to(x, 16, 3)
+        self.assertTrue(np.all(y[:100] == 0) and np.all(y[200:] == 0))
+
+    def test_16_bit_source_unchanged(self):
+        x = audio.quantise_to(to_int(tone(440.0, 0.2)), 16)
+        np.testing.assert_array_equal(audio.dither_to(x, 16, 9), x)
