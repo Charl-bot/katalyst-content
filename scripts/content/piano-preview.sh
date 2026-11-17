@@ -20,6 +20,6 @@ for root in $(seq 21 3 108); do
       -c:a libmp3lame -b:a 112k -ar 44100 "$work/piano/$(printf %03d "$root")-$label.mp3"
   done
 done
-out="$DIST/katalyst-grand-piano-preview-$VERSION.tar.gz"
+out="$(cd "$DIST" && pwd)/katalyst-grand-piano-preview-$VERSION.tar.gz"
 (cd "$work" && find piano -type f | LC_ALL=C sort | tar --owner=0 --group=0 --numeric-owner --mtime=@0 --format=ustar -cf - -T - | gzip -n -9 > "$out")
 echo "piano-preview: $(basename "$out") $(wc -c <"$out" | tr -d ' ') bytes sha256 $(sha256sum "$out" | cut -d' ' -f1)"
