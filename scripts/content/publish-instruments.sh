@@ -77,9 +77,15 @@ if [[ $BUILD -eq 1 ]]; then
   fi
   mkdir -p "$WORK"
   cp "$MANIFEST" "$WORK/manifest.committed.json"
+  # D-426: the bundled packs' manifest must reproduce too.
+  BUNDLED="$ROOT/content/bundled/manifest.json"
+  [[ -f "$BUNDLED" ]] && cp "$BUNDLED" "$WORK/bundled.committed.json"
   "$VENV/bin/python" -I "$ROOT/tools/content/build.py" build --work "$WORK" --out "$OUT" ${PACKARGS[@]+"${PACKARGS[@]}"}
   "$VENV/bin/python" -I "$ROOT/tools/content/build.py" pack --work "$WORK" --out "$OUT" --dist "$DIST" ${PACKARGS[@]+"${PACKARGS[@]}"}
   KIF_OUT="$OUT" KIF_PACKS="${PACKS[*]:-}" "$VENV/bin/python" -m unittest discover -s "$ROOT/tools/content/tests" -t "$ROOT/tools/content" >/dev/null
+  if [[ -f "$WORK/bundled.committed.json" ]] && ! cmp -s "$BUNDLED" "$WORK/bundled.committed.json"; then
+    [[ $ACCEPT -eq 1 ]] || { cp "$WORK/bundled.committed.json" "$BUNDLED"; die "the rebuild did not reproduce content/bundled/manifest.json. Nothing uploaded."; }
+  fi
   if ! cmp -s "$MANIFEST" "$WORK/manifest.committed.json"; then
     if [[ $ACCEPT -eq 1 ]]; then
       echo "The rebuild produced new hashes; content/instruments/manifest.json was rewritten. Review and commit it, then rerun without --build."
@@ -91,11 +97,13 @@ if [[ $BUILD -eq 1 ]]; then
 fi
 
 # 1. Every part present, right size, right hash.
-mapfile -t PARTS < <(KIF_PACKS="${PACKS[*]:-}" python3 - "$MANIFEST" <<'PY'
+mapfile -t PARTS < <(KIF_PACKS="${PACKS[*]:-}" python3 - "$MANIFEST" "$ROOT/content/bundled/manifest.json" <<'PY'
 import json, os, sys
-m = json.load(open(sys.argv[1]))
+packs = json.load(open(sys.argv[1]))["packs"]
+if os.path.exists(sys.argv[2]):  # D-426: packs that ship inside the app
+    packs += json.load(open(sys.argv[2]))["packs"]
 only = set(os.environ.get("KIF_PACKS", "").split())
-for p in m["packs"]:
+for p in packs:
     if only and p["id"] not in only:
         continue
     for part in p["parts"]:
@@ -134,6 +142,7 @@ for tag in $(printf '%s\n' "${PARTS[@]}" | cut -f5 | sort -u); do
     case "$tag" in
       *cc-by*) title="Katalyst instruments (CC BY set, attribution required)" ;;
       *testing*) title="Katalyst instruments (testing set: permission pending, never in store builds)" ;;
+      *bundled*) title="Katalyst built-in instruments (shipped inside the app, CC BY)" ;;
       *) title="Katalyst instruments (CC0 set v1)" ;;
     esac
     gh release create "$tag" --repo "$REPO_SLUG" --prerelease --title "$title" \

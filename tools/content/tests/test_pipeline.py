@@ -357,3 +357,68 @@ class FreezeCc(unittest.TestCase):
 
     def test_zero_amplitude_is_silent(self):
         self.assertIsNone(plan.freeze_ccs({"amplitude_oncc100": "100"}, {100: 0.0}, set()))
+
+
+class PianoShaping(unittest.TestCase):
+    """D-426: kept velocity layers re-tiled; loudness fitted to rise smoothly; dampers; stereo balance."""
+
+    def _zone(self, lo, hi, root=60, trigger="attack"):
+        z = plan.ZonePlan(instrument="p", key_lo=58, key_hi=61, root=root, vel_lo=lo, vel_hi=hi, articulation="n",
+                          trigger=trigger, layers=[(f"s{lo}", "main")], envelope={"attack": 0, "hold": 0, "decay": 0, "sustain": 1, "release": 1.0})
+        z.vel_center = (lo + hi) / 2.0
+        return z
+
+    def test_tiling_covers_every_velocity_once(self):
+        ip = plan.InstrumentPlan(cfg={"id": "p", "velocity_layers": "^v"})
+        ip.zones = [self._zone(1, 26), self._zone(44, 46), self._zone(65, 72), self._zone(89, 96), self._zone(121, 127)]
+        rel = self._zone(45, 127, trigger="release")
+        ip.zones.append(rel)
+        plan.tile_velocity_layers(ip)
+        att = sorted((z for z in ip.zones if z.trigger == "attack"), key=lambda z: z.vel_lo)
+        self.assertEqual(att[0].vel_lo, 1)
+        self.assertEqual(att[-1].vel_hi, 127)
+        for a, b in zip(att, att[1:]):
+            self.assertEqual(a.vel_hi + 1, b.vel_lo)
+            self.assertTrue(a.vel_lo <= a.vel_center <= a.vel_hi)
+        self.assertEqual((rel.vel_lo, rel.vel_hi), (45, 127))  # release zones keep their own range
+
+    def test_velocity_fit_is_continuous_and_rising(self):
+        levels = [(13.5, -31.0), (45.0, -24.0), (68.5, -20.5), (92.5, -16.0), (124.0, -12.5)]
+        ranges = [(1, 29), (30, 56), (57, 80), (81, 108), (109, 127)]
+
+        def played(v, k):
+            lo, hi = ranges[k]
+            gain, track, _ = pipeline.velocity_fit(levels, lo, hi, levels[k][1], -10.0)
+            x = v / 127.0
+            return levels[k][1] + gain + 20 * math.log10((1 - track) + track * x * x)
+
+        curve = [played(v, next(k for k, (lo, hi) in enumerate(ranges) if lo <= v <= hi)) for v in range(1, 128)]
+        for a, b in zip(curve, curve[1:]):
+            self.assertGreater(b, a - 1e-9)  # never quieter for a harder note
+            self.assertLess(b - a, 1.5)      # no step where a layer changes
+        self.assertAlmostEqual(curve[0], -41.0, delta=0.5)  # -10 dB below the softest layer at velocity 1
+        self.assertAlmostEqual(curve[-1], -12.5, delta=0.5)  # the hardest layer as recorded at 127
+
+    def test_dampers_and_balance(self):
+        zones = [self._zone(1, 127, root=r) for r in (24, 60, 96)]
+        kz = [{"envelope": dict(z.envelope)} for z in zones]
+
+        class S:
+            def __init__(self, b):
+                self.balance_db, self.loudness = b, -20.0
+
+        results = {z.layers[0][0]: S(b) for z, b in zip(zones, (6.0, -5.0, 0.0))}
+        for z, b in zip(zones, (6.0, -5.0, 0.0)):  # distinct sources per zone
+            z.layers = [(f"r{z.root}", "main")]
+            results[f"r{z.root}"] = S(b)
+        notes = []
+        pipeline.shape_piano({"dampers": [[21, 1.4], [89, 0.3]], "undamped_from": 90, "undamped_release": 5.0,
+                              "balance": {"low_db": 2.5, "high_db": -2.5}}, zones, kz, results, notes)
+        rel = [k["envelope"]["release"] for k in kz]
+        self.assertGreater(rel[0], rel[1])  # slower dampers in the bass
+        self.assertEqual(rel[2], 5.0)       # undamped treble rings on
+        # A sample 6 dB left of its place (+2.2 dB at key 24) has its left side lowered: pan > 0.
+        self.assertGreater(kz[0]["pan"], 0.0)
+        # One 5 dB right of centre (key 60 wants about +0.3 dB) has its right side lowered: pan < 0.
+        self.assertLess(kz[1]["pan"], 0.0)
+        self.assertTrue(any("Stereo balance" in n for n in notes))

@@ -130,6 +130,7 @@ class SampleOut:
     tail_rms_dbfs: float = -200.0
     clip_runs: int = 0
     loudness: Optional[float] = None
+    balance_db: Optional[float] = None  # D-426: left minus right energy over the first second (stereo only)
     pitch_cents: Optional[float] = None
     pitch_conf: float = 0.0
     pitch_octave: int = 0
@@ -269,6 +270,7 @@ def build_pack(pp: planmod.PackPlan, out_root: Path, keep_raw: bool = False, wor
             tail = fl[-int(0.1 * sr) :]
             so.tail_rms_dbfs = 10 * math.log10(float(np.mean(tail * tail)) + 1e-30)
             so.loudness = audio.max_momentary_lufs(fl, sr)
+            so.balance_db = audio.balance_db(fl, sr)
             if src in pitch_target:
                 root, tune = pitch_target[src]
                 detector = audio.detect_pitch_spectral if pitch_method.get(src) == "spectral" else audio.detect_pitch
@@ -367,6 +369,123 @@ def _rr_groups(zones) -> Dict[int, str]:
     return out
 
 
+def _interp(points: List[List[float]], x: float) -> float:
+    pts = sorted(points)
+    if x <= pts[0][0]:
+        return float(pts[0][1])
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        if x <= x1:
+            return float(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
+    return float(pts[-1][1])
+
+
+def velocity_fit(levels: List[Tuple[float, float]], lo: int, hi: int, own: float, floor_db: float) -> Tuple[float, float, float]:
+    """D-426: the zone gain and velocity tracking that make loudness rise smoothly through a key's layers.
+
+    ``levels`` are (recorded velocity, loudness) of the key's layers. The target loudness runs straight between
+    them, ``floor_db`` lower at velocity 1 than at the softest layer and level above the hardest. A zone covering
+    ``lo..hi`` whose sample has loudness ``own`` then needs, with the sampler's (1 - t) + t * x^2 law,
+    the gain g and tracking t that put it on the target at both ends of its range.
+    Returns (gain_db, track, gain at hi in dB) -- the last for the peak check.
+    """
+    pts = sorted(levels)
+    for i in range(1, len(pts)):  # never quieter for a harder layer
+        if pts[i][1] < pts[i - 1][1] + 0.5:
+            pts[i] = (pts[i][0], pts[i - 1][1] + 0.5)
+
+    def target(v: float) -> float:
+        if v <= pts[0][0]:
+            span = max(1.0, pts[0][0] - 1.0)
+            return pts[0][1] + floor_db * (pts[0][0] - v) / span
+        return _interp([list(p) for p in pts], v)
+
+    t_lo, t_hi = target(lo), target(hi)
+    xl, xh = lo / 127.0, hi / 127.0
+    r = 10 ** ((t_hi - t_lo) / 20.0)
+    track = 0.0
+    if r > 1.0 + 1e-9 and xh > xl:
+        track = min(1.0, (r - 1.0) / ((r - 1.0) + xh * xh - r * xl * xl))
+    vel_lo = (1.0 - track) + track * xl * xl
+    vel_hi = (1.0 - track) + track * xh * xh
+    gain = t_lo - own - _db(vel_lo)
+    return gain, track, gain + _db(vel_hi)
+
+
+def shape_piano(cfg: dict, zones, kz: List[dict], results: Dict[str, "SampleOut"], notes: List[str]) -> Dict[int, float]:
+    """D-426: a piano's dynamics, dampers and stereo image (instrument config "piano").
+
+    velocity_fit   each key's kept layers get gains and tracking so loudness rises smoothly with velocity
+                   (no step where a layer changes; the layer still brings its recorded tone)
+    dampers        [[key, seconds], ...]: key-up release time, interpolated; slower in the bass like real dampers
+    undamped_from  keys from here up have no dampers on a grand: they ring on after key-up (undamped_release s)
+    balance        {"low_db", "high_db"}: each attack sample's left/right balance is moved to a straight line from
+                   A0 to C8, so the image moves smoothly along the keyboard instead of jumping between samples
+    Returns the extra gain (dB) each attack zone reaches above its gain_db at the top of its range (peak check).
+    """
+    extra: Dict[int, float] = {}
+    floor_db = float(cfg.get("soft_floor_db", -12.0))
+    if cfg.get("velocity_fit"):
+        stacks: Dict[tuple, List[int]] = defaultdict(list)
+        for i, z in enumerate(zones):
+            if z.trigger == "attack":
+                stacks[(z.articulation, z.key_lo, z.key_hi)].append(i)
+        fitted = 0
+        for idx in stacks.values():
+            levels = []
+            for i in idx:
+                z = zones[i]
+                lv = results[z.layers[0][0]].loudness
+                if lv is None:
+                    raise ProvenanceError(f"{z.origin}: velocity_fit needs a measurable loudness")
+                centre = z.vel_center if z.vel_center is not None else (z.vel_lo + z.vel_hi) / 2.0
+                levels.append((centre, lv + z.gain_db))
+            for i, (centre, own) in zip(idx, levels):
+                z = zones[i]
+                gain, track, top = velocity_fit(levels, z.vel_lo, z.vel_hi, own, floor_db)
+                base = kz[i].get("gain_db", 0.0)
+                kz[i]["gain_db"] = round(base + gain, 4)
+                kz[i]["amp_veltrack"] = round(track, 4)
+                extra[i] = top - gain
+                fitted += 1
+        notes.append(f"Velocity fit (D-426): {fitted} zone(s) given gain and tracking so loudness rises smoothly through the layers, "
+                     f"{floor_db:+.0f} dB at velocity 1 below the softest layer.")
+    dampers = cfg.get("dampers")
+    if dampers:
+        undamped = int(cfg.get("undamped_from", 128))
+        ring = float(cfg.get("undamped_release", 4.0))
+        for i, z in enumerate(zones):
+            if z.trigger != "attack" or z.root is None:
+                continue
+            seconds = ring if z.root >= undamped else _interp(dampers, z.root)
+            env = dict(kz[i].get("envelope") or z.envelope)
+            env["release"] = round(seconds, 4)
+            kz[i]["envelope"] = env
+        notes.append(f"Dampers (D-426): key-up release {', '.join(f'{k}: {v} s' for k, v in sorted(dampers))}; "
+                     + (f"keys {undamped} and up undamped ({ring} s)." if undamped < 128 else "all keys damped."))
+    bal = cfg.get("balance")
+    if bal:
+        lo_db, hi_db = float(bal["low_db"]), float(bal["high_db"])
+        moved = []
+        for i, z in enumerate(zones):
+            if z.trigger != "attack" or z.root is None:
+                continue
+            m = results[z.layers[0][0]].balance_db
+            if m is None:
+                continue
+            want = lo_db + (hi_db - lo_db) * (min(max(z.root, 21), 108) - 21) / 87.0
+            c = max(-9.0, min(9.0, want - m))
+            # The sampler's balance for a stereo layer: pan > 0 lowers the left, pan < 0 the right.
+            pan = -(1.0 - 10 ** (-c / 20.0)) if c > 0 else (1.0 - 10 ** (c / 20.0))
+            kz[i]["pan"] = round(max(-1.0, min(1.0, z.pan + pan)), 4)
+            # Keep the louder side where it was: what one side lost comes back as overall gain.
+            kz[i]["gain_db"] = round(kz[i].get("gain_db", 0.0) + abs(c) / 2.0, 4)
+            moved.append(abs(c))
+        if moved:
+            notes.append(f"Stereo balance (D-426): {len(moved)} zone(s) moved toward {lo_db:+.1f} dB (A0) .. {hi_db:+.1f} dB (C8); "
+                         f"median move {median(moved):.1f} dB, largest {max(moved):.1f} dB.")
+    return extra
+
+
 def assemble(ip, pp, results, uf, group_loudness, group_peak):
     inst = ip.cfg
     zones = ip.zones
@@ -450,6 +569,9 @@ def assemble(ip, pp, results, uf, group_loudness, group_peak):
         kz.append(zo)
     if offset_clamped:
         notes.append(f"{offset_clamped} zone(s): upstream start offset fell inside the trimmed lead-in; playback starts at the trim point")
+    peak_extra: Dict[int, float] = {}
+    if inst.get("piano"):
+        peak_extra = shape_piano(inst["piano"], zones, kz, results, notes)
 
     # -- loudness normalisation (one gain for the whole instrument)
     def zone_level(z):
@@ -465,13 +587,14 @@ def assemble(ip, pp, results, uf, group_loudness, group_peak):
             k = (z.articulation, z.key_lo)
             top_vel[k] = max(top_vel.get(k, 0), z.vel_hi)
     refs, peaks = [], []
-    for z in zones:
+    for i, z in enumerate(zones):
         if z.trigger != "attack":
             continue
         lv, pk = zone_level(z)
-        peaks.append(pk + z.gain_db)
+        g = kz[i].get("gain_db", 0.0) if inst.get("piano") else z.gain_db
+        peaks.append(pk + g + peak_extra.get(i, 0.0))
         if z.vel_hi == top_vel[(z.articulation, z.key_lo)] and lv is not None:
-            refs.append(lv + z.gain_db)
+            refs.append(lv + g + peak_extra.get(i, 0.0))
     ref = median(refs) if refs else None
     gain = (TARGET_LUFS - ref) if ref is not None else 0.0
     max_peak = max(peaks) if peaks else -200.0
@@ -768,6 +891,11 @@ def cmd_pack(args, libs_cfg, insts):
     manifest_path = cli.REPO / "content" / "instruments" / "manifest.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {"packs": []}
     by_id = {p["id"]: p for p in manifest.get("packs", [])}
+    # D-426: a "bundled" pack ships inside the app (the built-in grand piano). It is published like any pack, but
+    # listed in its own manifest, which the suite's build reads; the app's downloadable catalogue never shows it.
+    bundled_path = cli.REPO / "content" / "bundled" / "manifest.json"
+    bundled = json.loads(bundled_path.read_text()) if bundled_path.exists() else {"packs": []}
+    bundled_by_id = {p["id"]: p for p in bundled.get("packs", [])}
     rel = insts.get("release", {})
     repo_slug, tag = rel.get("repo", RELEASE_REPO), rel.get("tag", RELEASE_TAG)
     base = release_base(repo_slug, tag)  # the default release; a pack may name its own
@@ -801,12 +929,21 @@ def cmd_pack(args, libs_cfg, insts):
             ],
             "parts": [{k: v for k, v in p.items()} for p in parts],
         }
-        by_id[pack["id"]] = entry
+        (bundled_by_id if pack.get("bundled") else by_id)[pack["id"]] = entry
         print(f"{pack['id']}: {len(parts)} part(s), {sum(p['bytes'] for p in parts) / 1e6:.1f} MB -> {args.dist}", flush=True)
         if getattr(args, "drop_after_hash", False):
             for p in parts:
                 (args.dist / p["file"]).unlink()
-    order = [p["id"] for p in insts["packs"]]
+    order = [p["id"] for p in insts["packs"] if not p.get("bundled")]
+    border = [p["id"] for p in insts["packs"] if p.get("bundled")]
+    if any(i in bundled_by_id for i in border):
+        bundled_path.parent.mkdir(parents=True, exist_ok=True)
+        bundled_path.write_text(json.dumps({
+            "schema": "katalyst-bundled-content/1",
+            "comment": "Generated by tools/content/build.py pack (D-426). Packs that ship inside the app: the suite's build downloads each part, checks sha256 and bytes, and bundles the unpacked folder. Never listed in the downloadable catalogue.",
+            "kif_version": 1,
+            "packs": [bundled_by_id[i] for i in border if i in bundled_by_id],
+        }, indent=1) + "\n")
     manifest = {
         "schema": "katalyst-instrument-manifest/1",
         "comment": "Generated by tools/content/build.py pack (D-191). The app downloads each part from 'url', checks sha256 and bytes, extracts, then checks every KIF (kif_sha256) and every sample (KIF samples[].sha256) before use.",
