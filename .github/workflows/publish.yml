@@ -45,6 +45,23 @@ jobs:
           [[ "${{ inputs.dry_run }}" == "true" ]] && args+=(--dry-run)
           for p in $PACKS; do args+=(--pack "$p"); done
           bash scripts/content/publish-instruments.sh "${args[@]}" 2>&1 | tee publish.log
+      # D-429: the browser preview's piano, made from the built grand-piano pack and published beside it (kept if
+      # already there, so the hash the suite pins never changes under it).
+      - name: Piano preview for the browser
+        if: ${{ !inputs.dry_run && (inputs.packs == '' || contains(inputs.packs, 'grand-piano')) }}
+        run: |
+          set -euo pipefail
+          tag=bundled-grand-piano-v1
+          version=$(python3 -c 'import json; print(json.load(open("tools/content/instruments.json"))["version"])')
+          file=katalyst-grand-piano-preview-$version.tar.gz
+          if gh release view "$tag" --json assets --jq '.assets[].name' | grep -qxF "$file"; then
+            echo "present   $file (kept)"
+          else
+            bash scripts/content/piano-preview.sh build-content/out/grand-piano build-content/preview "$version"
+            gh release upload "$tag" "build-content/preview/$file"
+          fi
+          curl -fsSL "https://github.com/$KATALYST_RELEASE_REPO/releases/download/$tag/$file" -o /tmp/preview.tar.gz
+          echo "online    $file sha256 $(sha256sum /tmp/preview.tar.gz | cut -d' ' -f1)"
       - name: Surface failure
         if: failure()
         run: grep -E "publish-instruments:|Error|error:|FAIL" publish.log | tail -20 | sed 's/^/::error::/' || true
