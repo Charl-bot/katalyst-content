@@ -51,6 +51,7 @@ jobs:
         if: ${{ !inputs.dry_run && (inputs.packs == '' || contains(inputs.packs, 'grand-piano')) }}
         run: |
           set -euo pipefail
+          command -v ffmpeg >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q ffmpeg; }
           tag=bundled-grand-piano-v1
           version=$(python3 -c 'import json; print(json.load(open("tools/content/instruments.json"))["version"])')
           file=katalyst-grand-piano-preview-$version.tar.gz
