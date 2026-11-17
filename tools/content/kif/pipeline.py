@@ -438,13 +438,14 @@ def shape_piano(cfg: dict, zones, kz: List[dict], results: Dict[str, "SampleOut"
                 if lv is None:
                     raise ProvenanceError(f"{z.origin}: velocity_fit needs a measurable loudness")
                 centre = z.vel_center if z.vel_center is not None else (z.vel_lo + z.vel_hi) / 2.0
-                levels.append((centre, lv + z.gain_db))
+                # Rounded before use: the fit must give the same bytes on every machine (a rebuild reproduces the hashes).
+                levels.append((centre, round(lv + z.gain_db, 2)))
             for i, (centre, own) in zip(idx, levels):
                 z = zones[i]
                 gain, track, top = velocity_fit(levels, z.vel_lo, z.vel_hi, own, floor_db)
                 base = kz[i].get("gain_db", 0.0)
-                kz[i]["gain_db"] = round(base + gain, 4)
-                kz[i]["amp_veltrack"] = round(track, 4)
+                kz[i]["gain_db"] = round(base + gain, 2)
+                kz[i]["amp_veltrack"] = round(track, 3)
                 extra[i] = top - gain
                 fitted += 1
         notes.append(f"Velocity fit (D-426): {fitted} zone(s) given gain and tracking so loudness rises smoothly through the layers, "
@@ -472,13 +473,14 @@ def shape_piano(cfg: dict, zones, kz: List[dict], results: Dict[str, "SampleOut"
             m = results[z.layers[0][0]].balance_db
             if m is None:
                 continue
+            m = round(m, 2)  # reproducible bytes: see velocity_fit
             want = lo_db + (hi_db - lo_db) * (min(max(z.root, 21), 108) - 21) / 87.0
             c = max(-9.0, min(9.0, want - m))
             # The sampler's balance for a stereo layer: pan > 0 lowers the left, pan < 0 the right.
             pan = -(1.0 - 10 ** (-c / 20.0)) if c > 0 else (1.0 - 10 ** (c / 20.0))
-            kz[i]["pan"] = round(max(-1.0, min(1.0, z.pan + pan)), 4)
+            kz[i]["pan"] = round(max(-1.0, min(1.0, z.pan + pan)), 3)
             # Keep the louder side where it was: what one side lost comes back as overall gain.
-            kz[i]["gain_db"] = round(kz[i].get("gain_db", 0.0) + abs(c) / 2.0, 4)
+            kz[i]["gain_db"] = round(kz[i].get("gain_db", 0.0) + abs(c) / 2.0, 2)
             moved.append(abs(c))
         if moved:
             notes.append(f"Stereo balance (D-426): {len(moved)} zone(s) moved toward {lo_db:+.1f} dB (A0) .. {hi_db:+.1f} dB (C8); "

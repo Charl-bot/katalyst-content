@@ -20,7 +20,7 @@
     "audio_commit": "3382bf9496bba2486f5ab0de55a264d1dfc38404",
     "mapping_commit": "3382bf9496bba2486f5ab0de55a264d1dfc38404"
    },
-   "installed_bytes": 71436148,
+   "installed_bytes": 71435575,
    "sample_count": 307,
    "instruments": [
     {
@@ -28,16 +28,16 @@
      "name": "Grand Piano",
      "category": "piano",
      "kif": "grand-piano/grand-piano.kif.json",
-     "kif_sha256": "2d92b09ad083775603454c037b13e76d2468fd2ecbc542b6ec2516e02baba62b",
-     "kif_bytes": 324172
+     "kif_sha256": "10f9c52595f2d778cccc27e177fa662ea68a40dfc433b3eef1ca3e05843a6cd2",
+     "kif_bytes": 323599
     }
    ],
    "parts": [
     {
      "file": "katalyst-grand-piano-1.1.0.tar.gz",
      "url": "https://github.com/Charl-bot/katalyst-content/releases/download/bundled-grand-piano-v1/katalyst-grand-piano-1.1.0.tar.gz",
-     "sha256": "cc70bf172bcabb67035cb70b32a39dfb4270ec9e2f9a52c7ddf8da67d776dc90",
-     "bytes": 66985133,
+     "sha256": "d45a5f5cfbd6f97474114308670e96f3ab480da1f15b7ffd51f8658855a372f6",
+     "bytes": 66985335,
      "members": 308
     }
    ]

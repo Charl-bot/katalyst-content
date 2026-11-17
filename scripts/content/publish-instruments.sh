@@ -84,6 +84,7 @@ if [[ $BUILD -eq 1 ]]; then
   "$VENV/bin/python" -I "$ROOT/tools/content/build.py" pack --work "$WORK" --out "$OUT" --dist "$DIST" ${PACKARGS[@]+"${PACKARGS[@]}"}
   KIF_OUT="$OUT" KIF_PACKS="${PACKS[*]:-}" "$VENV/bin/python" -m unittest discover -s "$ROOT/tools/content/tests" -t "$ROOT/tools/content" >/dev/null
   if [[ -f "$WORK/bundled.committed.json" ]] && ! cmp -s "$BUNDLED" "$WORK/bundled.committed.json"; then
+    diff "$WORK/bundled.committed.json" "$BUNDLED" | head -40 || true
     [[ $ACCEPT -eq 1 ]] || { cp "$WORK/bundled.committed.json" "$BUNDLED"; die "the rebuild did not reproduce content/bundled/manifest.json. Nothing uploaded."; }
   fi
   if ! cmp -s "$MANIFEST" "$WORK/manifest.committed.json"; then
@@ -91,6 +92,7 @@ if [[ $BUILD -eq 1 ]]; then
       echo "The rebuild produced new hashes; content/instruments/manifest.json was rewritten. Review and commit it, then rerun without --build."
       exit 3
     fi
+    diff "$WORK/manifest.committed.json" "$MANIFEST" | head -40 || true
     cp "$WORK/manifest.committed.json" "$MANIFEST"
     die "the rebuild did not reproduce the committed manifest (different hashes). Nothing uploaded. Check tools/content/requirements.txt pins (the FLAC encoder version decides the bytes), or rerun with --accept-new-hashes and commit the new manifest."
   fi
