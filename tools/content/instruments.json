@@ -2360,6 +2360,77 @@
           ]
         }
       ]
+    },
+    {
+      "id": "grand-piano",
+      "library": "salamander-grand",
+      "bundled": true,
+      "release": {
+        "tag": "bundled-grand-piano-v1"
+      },
+      "instruments": [
+        {
+          "id": "grand-piano",
+          "name": "Grand Piano",
+          "category": "piano",
+          "description": "The built-in grand: a Yamaha C5 recorded in an AB pair (Salamander Grand Piano V3), five velocity layers in minor thirds with smooth loudness between them, key-off damper and string-resonance samples, dampers slower in the bass and none in the top treble. Ships inside the app; plays offline. CC BY 3.0.",
+          "parts": [
+            {
+              "sfz": "Salamander Grand Piano V3.sfz",
+              "drop": ["^retuned$"]
+            }
+          ],
+          "articulations": [
+            {
+              "id": "natural",
+              "name": "Natural",
+              "match": "^natural$"
+            }
+          ],
+          "velocity_layers": "^v(1|5|9|12|16)$",
+          "cc_defaults": {
+            "72": 0.5
+          },
+          "controls": [
+            {
+              "cc": 64,
+              "name": "Sustain pedal",
+              "default": 0
+            },
+            {
+              "cc": 20,
+              "name": "String resonance",
+              "default": 64
+            },
+            {
+              "cc": 21,
+              "name": "Hammer noise",
+              "default": 64
+            }
+          ],
+          "piano": {
+            "velocity_fit": true,
+            "soft_floor_db": -10,
+            "dampers": [
+              [21, 1.4],
+              [45, 0.9],
+              [69, 0.5],
+              [89, 0.3]
+            ],
+            "undamped_from": 90,
+            "undamped_release": 5.0,
+            "balance": {
+              "low_db": 2.5,
+              "high_db": -2.5
+            }
+          },
+          "qa_notes": [
+            "Bundled with the app (D-426): not listed in the downloadable catalogue.",
+            "Five of the sixteen upstream velocity layers (v1, v5, v9, v12, v16) are kept; each covers the velocities nearest the one it was recorded for, and the velocity fit makes loudness rise smoothly through them.",
+            "Pedal noise (CC-triggered, silent keys) is omitted; sustain-pedal holding is the sampler's own."
+          ]
+        }
+      ]
     }
   ]
 }

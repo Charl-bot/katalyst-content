@@ -82,6 +82,9 @@ class ZonePlan:
     off_time: Optional[float] = None
     envelope: Optional[dict] = None
     origin: str = ""
+    # D-426: the velocity this layer was recorded for (the middle of its upstream range), kept when an instrument
+    # keeps only some of its velocity layers ("velocity_layers") and their ranges are re-tiled.
+    vel_center: Optional[float] = None
 
     def signature(self, stem: str) -> tuple:
         return (
@@ -262,6 +265,33 @@ def _resolve_articulation(region: sfzmod.Region, part: dict, inst: dict) -> Opti
     return hits[0]
 
 
+def tile_velocity_layers(ip: "InstrumentPlan") -> None:
+    """D-426: the kept velocity layers of each key region share out 1..127 between them.
+
+    Each layer keeps the velocity it was recorded for at the middle of its new range: the boundary between two
+    neighbours is halfway between their recorded velocities. Release-trigger zones keep their own ranges.
+    """
+    stacks: Dict[tuple, List[ZonePlan]] = defaultdict(list)
+    for z in ip.zones:
+        if z.trigger != "attack" or z.vel_center is None:
+            continue
+        k = (z.articulation, z.key_lo, z.key_hi, tuple(sorted((z.rr or {}).items())), tuple((c["cc"], c["lo"], c["hi"]) for c in z.cc))
+        stacks[k].append(z)
+    for k, zs in stacks.items():
+        zs.sort(key=lambda z: z.vel_center)
+        if len({z.vel_center for z in zs}) != len(zs):
+            raise ProvenanceError(f"{ip.cfg['id']}: keys {k[1]}-{k[2]}: two kept layers were recorded for the same velocity")
+        zs[0].vel_lo = 1
+        zs[-1].vel_hi = 127
+        for a, b in zip(zs, zs[1:]):
+            edge = int(math.floor((a.vel_center + b.vel_center) / 2.0))
+            a.vel_hi, b.vel_lo = edge, edge + 1
+    ip.notes.append(
+        f"Velocity layers kept: {len(max(stacks.values(), key=len)) if stacks else 0} per key "
+        f"(config {ip.cfg['velocity_layers']!r}); their ranges re-tiled to cover 1-127 (D-426)."
+    )
+
+
 def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) -> PackPlan:
     excl = Excluder(global_exclude, lib)
     licence_text, licence_sha = verify_licence(up)
@@ -383,6 +413,11 @@ def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) ->
                         ip.ignored_opcodes[f"trigger={trig} (treated as attack)"] += 1
                 else:
                     raise ProvenanceError(f"{region.origin}: unsupported trigger={trig}")
+                # D-426: an instrument may keep only some velocity layers (by group label); the rest are not fetched.
+                keep_layer = bool(inst.get("velocity_layers")) and trigger == "attack"
+                if keep_layer and not re.search(inst["velocity_layers"], op.get("group_label", "")):
+                    ip.skipped[f"velocity layer not kept by config: {op.get('group_label') or '(unlabelled)'}"] += 1
+                    continue
                 # -- sample: resolve at the mapping commit, then require the same bytes at the audio commit
                 excl.check(region.sample)
                 entry_m, warn = up.resolve(region.sample, up.mapping_commit)
@@ -446,7 +481,11 @@ def plan_pack(pack: dict, lib: dict, global_exclude: List[str], up: Upstream) ->
                 )
                 if z.vel_lo > z.vel_hi:
                     raise ProvenanceError(f"{region.origin}: velocity {z.vel_lo}-{z.vel_hi}")
+                if keep_layer:
+                    z.vel_center = (z.vel_lo + z.vel_hi) / 2.0
                 ip.zones.append(z)
+        if inst.get("velocity_layers"):
+            tile_velocity_layers(ip)
         # articulations + keyswitches
         out_arts = []
         for a in inst["articulations"]:

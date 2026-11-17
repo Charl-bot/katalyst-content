@@ -170,6 +170,17 @@ def k_weighting(fs: int):
     return (b1, a1), (b2, a2)
 
 
+def balance_db(x: np.ndarray, fs: int, seconds: float = 1.0) -> Optional[float]:
+    """D-426: left minus right energy (dB) over the first ``seconds`` of a stereo sample; None for mono or silence."""
+    if x.ndim != 2 or x.shape[1] != 2:
+        return None
+    seg = x[: max(1, int(seconds * fs))].astype(np.float64)
+    el, er = float(np.mean(seg[:, 0] ** 2)), float(np.mean(seg[:, 1] ** 2))
+    if el <= 1e-20 or er <= 1e-20:
+        return None
+    return 10.0 * math.log10(el / er)
+
+
 def max_momentary_lufs(x: np.ndarray, fs: int) -> Optional[float]:
     """x: float (frames, channels). Returns max 400 ms loudness, or None if silent."""
     if x.shape[1] == 1:
